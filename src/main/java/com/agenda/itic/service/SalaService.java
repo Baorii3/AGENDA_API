@@ -20,31 +20,52 @@ public class SalaService {
     }
 
     public Sala postSala(SalaRequest salaRequest) {
-        Sala sala = new Sala();
-        sala.setNom_sala(salaRequest.getNom_sala());
-        sala.setUbicacio_sala(salaRequest.getUbicacio_sala());
-        sala.setDescripcio(salaRequest.getDescripcio());
-        return salaRepository.save(sala);
+        if (salaRequest == null) {
+            return null;
+        }
+        try {
+            Sala sala = new Sala();
+            sala.setNom(salaRequest.getNom());
+            sala.setTipus(salaRequest.getTipus());
+            sala.setUbicacio(salaRequest.getUbicacio());
+            sala.setDescripcio(salaRequest.getDescripcio());
+            sala.setActiva(salaRequest.getActiva());
+            return salaRepository.save(sala);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public Sala putSala(Long id, SalaRequest salaRequest) {
-        Sala sala = salaRepository.findById(id).orElse(null);
-        if (sala != null) {
-            sala.setNom_sala(salaRequest.getNom_sala());
-            sala.setUbicacio_sala(salaRequest.getUbicacio_sala());
-            sala.setDescripcio(salaRequest.getDescripcio());
-            return salaRepository.save(sala);
-            
+        if (salaRequest == null) {
+            return null;
         }
-        return null;
+        try {
+            Sala sala = salaRepository.findById(id).orElse(null);
+            if (sala != null) {
+                sala.setNom(salaRequest.getNom());
+                sala.setTipus(salaRequest.getTipus());
+                sala.setUbicacio(salaRequest.getUbicacio());
+                sala.setDescripcio(salaRequest.getDescripcio());
+                sala.setActiva(salaRequest.getActiva());
+                return salaRepository.save(sala);
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public boolean deleteSala(Long id) {
         if (!salaRepository.existsById(id)) {
             return false;
         }
-        salaRepository.deleteById(id);
-        return true;
-        
+        try {
+            salaRepository.deleteById(id);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

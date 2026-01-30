@@ -1,63 +1,111 @@
 package com.agenda.itic.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 public class Sala {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_sala;
-    private String nom_sala;
-    private String ubicacio_sala;
+    private String nom;
+    @Enumerated(EnumType.STRING)
+    private TipusSala tipus;
+    private String ubicacio;
     private String descripcio;
-    private Boolean estat = true;   
+    private Boolean activa = true;
+    private LocalDateTime dataCreacio;
+    private LocalDateTime dataModificacio;
+
+    public enum TipusSala {
+        agora, ateca
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        dataCreacio = LocalDateTime.now();
+        dataModificacio = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        dataModificacio = LocalDateTime.now();
+    }
 
     public Sala() {
     }
 
-    public Sala(Long id_sala, String nom_sala, String ubicacio_sala, String descripcio, Boolean estat) {
+    public Sala(Long id_sala, String nom, TipusSala tipus, String ubicacio, String descripcio, Boolean activa) {
         this.id_sala = id_sala;
-        this.nom_sala = nom_sala;
-        this.ubicacio_sala = ubicacio_sala;
+        this.nom = nom;
+        this.tipus = tipus;
+        this.ubicacio = ubicacio;
         this.descripcio = descripcio;
-        this.estat = estat;
+        this.activa = activa;
     }
-
 
     public Long getId_sala() {
         return id_sala;
     }
+
     public void setId_sala(Long id_sala) {
         this.id_sala = id_sala;
     }
-    public String getNom_sala() {
-        return nom_sala;
+
+    public String getNom() {
+        return nom;
     }
-    public void setNom_sala(String nom_sala) {
-        this.nom_sala = nom_sala;
+
+    public void setNom(String nom) {
+        this.nom = nom;
     }
-    public String getUbicacio_sala() {
-        return ubicacio_sala;
+
+    public TipusSala getTipus() {
+        return tipus;
     }
-    public void setUbicacio_sala(String ubicacio_sala) {
-        this.ubicacio_sala = ubicacio_sala;
+
+    public void setTipus(TipusSala tipus) {
+        this.tipus = tipus;
     }
+
+    public String getUbicacio() {
+        return ubicacio;
+    }
+
+    public void setUbicacio(String ubicacio) {
+        this.ubicacio = ubicacio;
+    }
+
     public String getDescripcio() {
         return descripcio;
     }
+
     public void setDescripcio(String descripcio) {
         this.descripcio = descripcio;
     }
-    public Boolean getEstat() {
-        return estat;
-    }
-    public void setEstat(Boolean estat) {
-        this.estat = estat;
+
+    public Boolean getActiva() {
+        return activa;
     }
 
-    
+    public void setActiva(Boolean activa) {
+        this.activa = activa;
+    }
+
+    public LocalDateTime getDataCreacio() {
+        return dataCreacio;
+    }
+
+    public void setDataCreacio(LocalDateTime dataCreacio) {
+        this.dataCreacio = dataCreacio;
+    }
+
+    public LocalDateTime getDataModificacio() {
+        return dataModificacio;
+    }
+
+    public void setDataModificacio(LocalDateTime dataModificacio) {
+        this.dataModificacio = dataModificacio;
+    }
 }

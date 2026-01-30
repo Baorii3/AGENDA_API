@@ -12,7 +12,4 @@ public interface SalaRepository extends CrudRepository<Sala, Long> {
 
     List<Sala> findAll();
 
-    
-    
-    
 }
