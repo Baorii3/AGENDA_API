@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "usuaris")
 public class Usuari {
 
     @Id
@@ -44,12 +43,12 @@ public class Usuari {
         this.actiu = actiu;
     }
 
-    public Long getId_usuari() {
+    public Long getId() {
         return id_usuari;
     }
 
-    public void setId_usuari(Long id_usuari) {
-        this.id_usuari = id_usuari;
+    public void setId(Long id) {
+        this.id_usuari = id;
     }
 
     public String getNom() {

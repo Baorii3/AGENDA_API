@@ -19,7 +19,7 @@ public class SalaService {
         return salaRepository.findAll();
     }
 
-    public Sala postSala(SalaRequest salaRequest) {
+    public Sala createSala(SalaRequest salaRequest) {
         if (salaRequest == null) {
             return null;
         }
@@ -36,7 +36,7 @@ public class SalaService {
         }
     }
 
-    public Sala putSala(Long id, SalaRequest salaRequest) {
+    public Sala updateSala(Long id, SalaRequest salaRequest) {
         if (salaRequest == null) {
             return null;
         }

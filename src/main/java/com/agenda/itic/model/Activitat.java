@@ -6,20 +6,20 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
-@Table(name = "activitats")
 public class Activitat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_activitat;
-    @Column(name = "id_sala")
-    private Long id_sala;
+    @ManyToOne
+    @JoinColumn(name = "id_sala", referencedColumnName = "id_sala")
+    private Sala sala;
     private String titol;
     private String resum;
     private String descripcio;
-    private String responsable;
-    @Column(name = "id_usuari")
-    private Long id_usuari;
+    @ManyToOne
+    @JoinColumn(name = "id_usuari", referencedColumnName = "id_usuari")
+    private Usuari user;
     private LocalDate data;
     private LocalTime horaInici;
     private LocalTime horaFi;
@@ -47,16 +47,15 @@ public class Activitat {
     public Activitat() {
     }
 
-    public Activitat(Long id_activitat, Long id_sala, String titol, String resum, String descripcio, String responsable,
-            Long id_usuari, LocalDate data, LocalTime horaInici, LocalTime horaFi, Integer prioritat, Estat estat,
+    public Activitat(Long id_activitat, Sala sala, String titol, String resum, String descripcio,
+            Usuari user, LocalDate data, LocalTime horaInici, LocalTime horaFi, Integer prioritat, Estat estat,
             Boolean visible) {
         this.id_activitat = id_activitat;
-        this.id_sala = id_sala;
+        this.sala = sala;
         this.titol = titol;
         this.resum = resum;
         this.descripcio = descripcio;
-        this.responsable = responsable;
-        this.id_usuari = id_usuari;
+        this.user = user;
         this.data = data;
         this.horaInici = horaInici;
         this.horaFi = horaFi;
@@ -73,12 +72,12 @@ public class Activitat {
         this.id_activitat = id_activitat;
     }
 
-    public Long getId_sala() {
-        return id_sala;
+    public Sala getSala() {
+        return sala;
     }
 
-    public void setId_sala(Long id_sala) {
-        this.id_sala = id_sala;
+    public void setSala(Sala sala) {
+        this.sala = sala;
     }
 
     public String getTitol() {
@@ -105,20 +104,12 @@ public class Activitat {
         this.descripcio = descripcio;
     }
 
-    public String getResponsable() {
-        return responsable;
+    public Usuari getUser() {
+        return user;
     }
 
-    public void setResponsable(String responsable) {
-        this.responsable = responsable;
-    }
-
-    public Long getId_usuari() {
-        return id_usuari;
-    }
-
-    public void setId_usuari(Long id_usuari) {
-        this.id_usuari = id_usuari;
+    public void setUser(Usuari user) {
+        this.user = user;
     }
 
     public LocalDate getData() {

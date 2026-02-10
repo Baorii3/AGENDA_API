@@ -34,7 +34,7 @@ public class SalaController {
 
     @PostMapping("/salas")
     public ResponseEntity<Sala> postSala(@RequestBody SalaRequest salaRequest) {
-        Sala sala = salaService.postSala(salaRequest);
+        Sala sala = salaService.createSala(salaRequest);
         if (sala != null) {
             return ResponseEntity.status(HttpStatus.CREATED).body(sala);
         } else {
@@ -44,7 +44,7 @@ public class SalaController {
 
     @PutMapping("/salas/{id}")
     public ResponseEntity<Sala> putSala(@PathVariable Long id, @RequestBody SalaRequest salaRequest) {
-        Sala salaActualitzada = salaService.putSala(id, salaRequest);
+        Sala salaActualitzada = salaService.updateSala(id, salaRequest);
         if (salaActualitzada != null) {
             return ResponseEntity.status(HttpStatus.OK).body(salaActualitzada);
         } else {

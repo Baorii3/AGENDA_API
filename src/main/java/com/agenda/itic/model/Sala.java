@@ -45,11 +45,11 @@ public class Sala {
         this.activa = activa;
     }
 
-    public Long getId_sala() {
+    public Long getId() {
         return id_sala;
     }
 
-    public void setId_sala(Long id_sala) {
+    public void setId(Long id_sala) {
         this.id_sala = id_sala;
     }
 
