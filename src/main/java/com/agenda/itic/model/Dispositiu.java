@@ -13,7 +13,10 @@ public class Dispositiu {
     private String ip;
     private String mac;
     private String model;
-    private String sistema;
+    private String tipus;
+    private String marca;
+    private String numero_serie;
+    private String sala;
     private Boolean actiu;
     private LocalDateTime dataCreacio;
     private LocalDateTime dataModificacio;
@@ -32,15 +35,50 @@ public class Dispositiu {
     public Dispositiu() {
     }
 
-    public Dispositiu(Long id_dispositiu, String nom, String ip, String mac, String model, String sistema,
-            Boolean actiu) {
+    public Dispositiu(Long id_dispositiu, String nom, String ip, String mac, String model, String tipus,
+            String marca, String numero_serie, String sala, Boolean actiu) {
         this.id_dispositiu = id_dispositiu;
         this.nom = nom;
         this.ip = ip;
         this.mac = mac;
         this.model = model;
-        this.sistema = sistema;
+        this.tipus = tipus;
+        this.marca = marca;
+        this.numero_serie = numero_serie;
+        this.sala = sala;
         this.actiu = actiu;
+    }
+
+    public String getTipus() {
+        return tipus;
+    }
+
+    public void setTipus(String tipus) {
+        this.tipus = tipus;
+    }
+
+    public String getMarca() {
+        return marca;
+    }
+
+    public void setMarca(String marca) {
+        this.marca = marca;
+    }
+
+    public String getNumero_serie() {
+        return numero_serie;
+    }
+
+    public void setNumero_serie(String numero_serie) {
+        this.numero_serie = numero_serie;
+    }
+
+    public String getSala() {
+        return sala;
+    }
+
+    public void setSala(String sala) {
+        this.sala = sala;
     }
 
     public Long getId_dispositiu() {
@@ -81,14 +119,6 @@ public class Dispositiu {
 
     public void setModel(String model) {
         this.model = model;
-    }
-
-    public String getSistema() {
-        return sistema;
-    }
-
-    public void setSistema(String sistema) {
-        this.sistema = sistema;
     }
 
     public Boolean getActiu() {

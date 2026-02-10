@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.agenda.itic.dto.DispositiuRequestDTO;
 import com.agenda.itic.model.Dispositiu;
 import com.agenda.itic.repository.DispositiuRepository;
 
@@ -13,6 +14,18 @@ public class DispositiuService {
 
     @Autowired
     DispositiuRepository dispositiuRepository;
+
+    public Dispositiu mapToDispositiu(DispositiuRequestDTO dispositiuDTO) {
+        Dispositiu dispositiu = new Dispositiu();
+        dispositiu.setNom(dispositiuDTO.getNom());
+        dispositiu.setTipus(dispositiuDTO.getTipus());
+        dispositiu.setMarca(dispositiuDTO.getMarca());
+        dispositiu.setModel(dispositiuDTO.getModel());
+        dispositiu.setNumero_serie(dispositiuDTO.getNumero_serie());
+        dispositiu.setSala(dispositiuDTO.getSala());
+        dispositiu.setActiu(dispositiuDTO.getActiu());
+        return dispositiu;
+    }
 
     public List<Dispositiu> getDispositius() {
         return dispositiuRepository.findAll();
@@ -29,15 +42,16 @@ public class DispositiuService {
         }
     }
 
-    public Dispositiu updateDispositiu(Long id, Dispositiu dispositiu) {
-        if (dispositiu == null) {
+    public Dispositiu updateDispositiu(Long id, DispositiuRequestDTO dispositiuDTO) {
+        if (dispositiuDTO == null) {
             return null;
         }
         try {
             Dispositiu existingDispositiu = dispositiuRepository.findById(id).orElse(null);
             if (existingDispositiu != null) {
-                dispositiu.setId_dispositiu(id);
-                return dispositiuRepository.save(dispositiu);
+                existingDispositiu = mapToDispositiu(dispositiuDTO);
+                existingDispositiu.setId_dispositiu(id);
+                return dispositiuRepository.save(existingDispositiu);
             } else {
                 return null;
             }
