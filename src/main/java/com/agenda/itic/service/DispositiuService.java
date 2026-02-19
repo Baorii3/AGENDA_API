@@ -31,12 +31,12 @@ public class DispositiuService {
         return dispositiuRepository.findAll();
     }
 
-    public Dispositiu createDispositiu(Dispositiu dispositiu) {
+    public Dispositiu createDispositiu(DispositiuRequestDTO dispositiu) {
         if (dispositiu == null) {
             return null;
         }
         try {
-            return dispositiuRepository.save(dispositiu);
+            return dispositiuRepository.save(mapToDispositiu(dispositiu));
         } catch (Exception e) {
             return null;
         }

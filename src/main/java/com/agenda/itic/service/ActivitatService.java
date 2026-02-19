@@ -5,15 +5,24 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.agenda.itic.dto.ActivitatRequestDTO;
 import com.agenda.itic.dto.ActivitatResponseDTO;
 import com.agenda.itic.model.Activitat;
 import com.agenda.itic.repository.ActivitatRepository;
+import com.agenda.itic.repository.SalaRepository;
+import com.agenda.itic.repository.UsuariRepository;
 
 @Service
 public class ActivitatService {
 
     @Autowired
     ActivitatRepository activitatRepository;
+
+    @Autowired
+    SalaRepository salaRepository;
+
+    @Autowired
+    UsuariRepository usuariRepository;
 
     public List<ActivitatResponseDTO> getAllActivitats() {
         return activitatRepository.findAll()
@@ -23,11 +32,11 @@ public class ActivitatService {
     }
     private ActivitatResponseDTO toDTO(Activitat a) {
         return new ActivitatResponseDTO(
-            a.getSala().getId(),
+            a.getId_sala(),
+            a.getGoogleId(),
             a.getTitol(),
             a.getResum(),
             a.getDescripcio(),
-            a.getUser().getId(),
             a.getData(),
             a.getHoraInici(),
             a.getHoraFi(),
@@ -35,5 +44,39 @@ public class ActivitatService {
             a.getEstat().name(),
             a.getVisible()
         );
+    }
+    private Activitat toModel(ActivitatRequestDTO activitatRequestDTO) {
+        Activitat activitat = new Activitat();
+        activitat.setId_sala(activitatRequestDTO.getId_sala());
+        activitat.setTitol(activitatRequestDTO.getTitol());
+        activitat.setResum(activitatRequestDTO.getResum());
+        activitat.setDescripcio(activitatRequestDTO.getDescripcio());
+        activitat.setData(activitatRequestDTO.getData());
+        activitat.setHoraInici(activitatRequestDTO.getHoraInici());
+        activitat.setHoraFi(activitatRequestDTO.getHoraFi());
+        activitat.setPrioritat(activitatRequestDTO.getPrioritat());
+        activitat.setEstat(activitatRequestDTO.getEstat());
+        activitat.setVisible(activitatRequestDTO.getVisible());
+
+        return activitat;
+    }
+
+    public ActivitatResponseDTO getActivitatById(Long id) {
+        return toDTO(activitatRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Activitat no trobada")));
+    }
+
+    public ActivitatResponseDTO createActivitat(ActivitatRequestDTO activitatRequestDTO) {
+        if (activitatRequestDTO.getTitol() == null) {
+            throw new IllegalArgumentException("El títol és obligatori");
+        }
+        if (activitatRequestDTO.getResum() == null) {
+            throw new IllegalArgumentException("El resum és obligatori");
+        }
+        if (activitatRequestDTO.getDescripcio() == null) {
+            throw new IllegalArgumentException("La descripció és obligatòria");
+        }
+        Activitat activitat = toModel(activitatRequestDTO);
+        
+        return toDTO(activitatRepository.save(activitat));
     }
 }

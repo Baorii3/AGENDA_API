@@ -9,7 +9,11 @@ public class Usuari {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_usuari;
+
+    @Column(nullable = false)
     private String nom;
+
+    @Column(nullable = false, unique = true)
     private String email;
     @Enumerated(EnumType.STRING)
     private Rol rol;
@@ -17,6 +21,11 @@ public class Usuari {
     private LocalDateTime dataCreacio;
     private LocalDateTime dataModificacio;
 
+    // AUTH
+    @Column(nullable = false)
+    private String provider;
+    @Column(nullable = false, unique = true)
+    private String providerId;
     public enum Rol {
         admin, usuari
     }

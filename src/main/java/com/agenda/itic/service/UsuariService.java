@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.agenda.itic.dto.UsuariRequestDTO;
 import com.agenda.itic.model.Usuari;
+import com.agenda.itic.model.Usuari.Rol;
 import com.agenda.itic.repository.UsuariRepository;
 
 @Service
@@ -31,8 +32,8 @@ public class UsuariService {
             Usuari usuari = new Usuari();
             usuari.setNom(usuariRequestDTO.getNom());
             usuari.setEmail(usuariRequestDTO.getEmail());
-            usuari.setRol(usuariRequestDTO.getRol());
-            usuari.setActiu(usuariRequestDTO.getActiu());
+            usuari.setRol(usuariRequestDTO.getRol() != null ? usuariRequestDTO.getRol() : Rol.usuari);
+            usuari.setActiu(usuariRequestDTO.getActiu() != null ? usuariRequestDTO.getActiu() : false);
             return usuariRepository.save(usuari);
         } catch (Exception e) {
             return null;
@@ -47,8 +48,8 @@ public class UsuariService {
             Usuari usuari = usuariRepository.findById(id).get();
             usuari.setNom(usuariRequestDTO.getNom());
             usuari.setEmail(usuariRequestDTO.getEmail());
-            usuari.setRol(usuariRequestDTO.getRol());
-            usuari.setActiu(usuariRequestDTO.getActiu());
+            usuari.setRol(usuariRequestDTO.getRol() != null ? usuariRequestDTO.getRol() : Rol.usuari);
+            usuari.setActiu(usuariRequestDTO.getActiu() != null ? usuariRequestDTO.getActiu() : false);
             return usuariRepository.save(usuari);
         } catch (Exception e) {
             return null;

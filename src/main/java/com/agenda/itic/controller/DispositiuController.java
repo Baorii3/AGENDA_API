@@ -12,6 +12,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("/dispositius")
+@CrossOrigin(origins = "*")
 public class DispositiuController {
 
     @Autowired
@@ -31,7 +34,7 @@ public class DispositiuController {
     }
 
     @PostMapping("/dispositius")
-    public ResponseEntity<List<Dispositiu>> postMethodName(@RequestBody Dispositiu dispositiu) {
+    public ResponseEntity<List<Dispositiu>> postMethodName(@RequestBody DispositiuRequestDTO dispositiu) {
         Dispositiu entity = dispositiuService.createDispositiu(dispositiu);
         if (entity == null) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
@@ -48,4 +51,13 @@ public class DispositiuController {
         return ResponseEntity.status(HttpStatus.OK).body(updatedEntity);
     }
 
+    @DeleteMapping("/dispositius/{id}")
+    public ResponseEntity<Void> deleteDispositiu(@PathVariable Long id) {
+        boolean deleted = dispositiuService.deleteDispositiu(id);
+        if (deleted) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }
