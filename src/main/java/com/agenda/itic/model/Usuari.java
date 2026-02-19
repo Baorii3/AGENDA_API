@@ -22,10 +22,9 @@ public class Usuari {
     private LocalDateTime dataModificacio;
 
     // AUTH
-    @Column(nullable = false)
     private String provider;
-    @Column(nullable = false, unique = true)
     private String providerId;
+
     public enum Rol {
         admin, usuari
     }
@@ -44,12 +43,14 @@ public class Usuari {
     public Usuari() {
     }
 
-    public Usuari(Long id_usuari, String nom, String email, Rol rol, Boolean actiu) {
+    public Usuari(Long id_usuari, String nom, String email, Rol rol, Boolean actiu, String provider, String providerId) {
         this.id_usuari = id_usuari;
         this.nom = nom;
         this.email = email;
         this.rol = rol;
         this.actiu = actiu;
+        this.provider = provider;
+        this.providerId = providerId;
     }
 
     public Long getId() {
@@ -106,5 +107,21 @@ public class Usuari {
 
     public void setDataModificacio(LocalDateTime dataModificacio) {
         this.dataModificacio = dataModificacio;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
     }
 }

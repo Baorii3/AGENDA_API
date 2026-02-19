@@ -28,8 +28,13 @@ public class OAuthController {
         OAuth2User user = (OAuth2User) authentication.getPrincipal();
         UsuariRequestDTO dto = new UsuariRequestDTO();
         dto.setEmail(user.getAttribute("email"));
-        dto.setNom(user.getAttribute("name"));
-        Usuari usuari = usuariService.createUsuari(dto);
+        dto.setNom(user.getAttribute("name"));  
+        String providerName = "google";
+        dto.setProvider(providerName);
+        String providerId = user.getName();
+        dto.setProviderId(providerId);
+        Usuari usuari = usuariService.createOrUpdateOAuthUsuari(dto);
+
         if (usuari == null) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al crear l'usuari");
         }

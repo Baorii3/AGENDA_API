@@ -34,9 +34,29 @@ public class UsuariService {
             usuari.setEmail(usuariRequestDTO.getEmail());
             usuari.setRol(usuariRequestDTO.getRol() != null ? usuariRequestDTO.getRol() : Rol.usuari);
             usuari.setActiu(usuariRequestDTO.getActiu() != null ? usuariRequestDTO.getActiu() : false);
+            usuari.setProvider(usuariRequestDTO.getProvider() != null ? usuariRequestDTO.getProvider() : "local");
+            usuari.setProviderId(usuariRequestDTO.getProviderId());
             return usuariRepository.save(usuari);
         } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    public Usuari createOrUpdateOAuthUsuari(UsuariRequestDTO usuariRequestDTO) {
+        if (usuariRequestDTO == null || usuariRequestDTO.getEmail() == null) {
             return null;
+        }
+        try {
+            Usuari usuari = usuariRepository.findByEmail(usuariRequestDTO.getEmail()).orElseGet(Usuari::new);
+            if (usuari.getId() == null) {
+                usuari.setNom(usuariRequestDTO.getNom());
+                usuari.setEmail(usuariRequestDTO.getEmail());
+                usuari.setRol(Rol.usuari);
+                usuari.setActiu(true);
+            }
+            return usuariRepository.save(usuari);
+        } catch (Exception e) {
+            throw e;
         }
     }
 
@@ -50,9 +70,11 @@ public class UsuariService {
             usuari.setEmail(usuariRequestDTO.getEmail());
             usuari.setRol(usuariRequestDTO.getRol() != null ? usuariRequestDTO.getRol() : Rol.usuari);
             usuari.setActiu(usuariRequestDTO.getActiu() != null ? usuariRequestDTO.getActiu() : false);
+            usuari.setProvider(usuariRequestDTO.getProvider() != null ? usuariRequestDTO.getProvider() : usuari.getProvider());
+            usuari.setProviderId(usuariRequestDTO.getProviderId() != null ? usuariRequestDTO.getProviderId() : usuari.getProviderId());
             return usuariRepository.save(usuari);
         } catch (Exception e) {
-            return null;
+            throw e;
         }
     }
 
@@ -62,7 +84,7 @@ public class UsuariService {
             usuariRepository.delete(usuari);
             return usuari;
         } catch (Exception e) {
-            return null;
+            throw e;
         }
     }
 }

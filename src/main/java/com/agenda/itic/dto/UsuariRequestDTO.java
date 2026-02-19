@@ -7,6 +7,8 @@ public class UsuariRequestDTO {
     private String email;
     private Usuari.Rol rol;
     private Boolean actiu;
+    private String provider;
+    private String providerId;
 
     public UsuariRequestDTO() {
     }
@@ -48,5 +50,21 @@ public class UsuariRequestDTO {
 
     public void setActiu(Boolean actiu) {
         this.actiu = actiu;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
     }
 }
