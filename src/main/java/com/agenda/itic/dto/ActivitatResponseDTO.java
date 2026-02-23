@@ -13,14 +13,13 @@ public class ActivitatResponseDTO {
     private LocalDate data;
     private LocalTime horaInici;
     private LocalTime horaFi;
-    private Integer prioritat;
     private String estat;
     private Boolean visible;
 
 
     
     public ActivitatResponseDTO(Long id_sala, String google_id, String titol, String resum, String descripcio,
-            LocalDate data, LocalTime horaInici, LocalTime horaFi, Integer prioritat, String estat,
+            LocalDate data, LocalTime horaInici, LocalTime horaFi, String estat,
             Boolean visible) {
         this.id_sala = id_sala;
         this.google_id = google_id;
@@ -30,7 +29,6 @@ public class ActivitatResponseDTO {
         this.data = data;
         this.horaInici = horaInici;
         this.horaFi = horaFi;
-        this.prioritat = prioritat;
         this.estat = estat;
         this.visible = visible;
     }
@@ -129,18 +127,6 @@ public class ActivitatResponseDTO {
 
     public void setHoraFi(LocalTime horaFi) {
         this.horaFi = horaFi;
-    }
-
-
-
-    public Integer getPrioritat() {
-        return prioritat;
-    }
-
-
-
-    public void setPrioritat(Integer prioritat) {
-        this.prioritat = prioritat;
     }
 
 

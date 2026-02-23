@@ -17,12 +17,11 @@ public class ActivitatRequestDTO {
     private LocalTime horaInici;
     @JsonFormat(pattern = "HH:mm")
     private LocalTime horaFi;
-    private Integer prioritat;
     private Estat estat;
     private Boolean visible;
 
-    public ActivitatRequestDTO(Long id_sala, String titol, String resum, String descripcio,
-            LocalDate data, LocalTime horaInici, LocalTime horaFi, Integer prioritat, String estat,
+        public ActivitatRequestDTO(Long id_sala, String titol, String resum, String descripcio,
+            LocalDate data, LocalTime horaInici, LocalTime horaFi, String estat,
             Boolean visible) {
         this.id_sala = id_sala;
         this.titol = titol;
@@ -31,7 +30,6 @@ public class ActivitatRequestDTO {
         this.data = data;
         this.horaInici = horaInici;
         this.horaFi = horaFi;
-        this.prioritat = prioritat;
         this.estat = Estat.valueOf(estat);
         this.visible = visible;
     }
@@ -90,14 +88,6 @@ public class ActivitatRequestDTO {
 
     public void setHoraFi(LocalTime horaFi) {
         this.horaFi = horaFi;
-    }
-
-    public Integer getPrioritat() {
-        return prioritat;
-    }
-
-    public void setPrioritat(Integer prioritat) {
-        this.prioritat = prioritat;
     }
 
     public Estat getEstat() {

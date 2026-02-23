@@ -24,27 +24,30 @@ public class ActivitatService {
     @Autowired
     UsuariRepository usuariRepository;
 
+    @Autowired
+    GoogleCalendarService googleCalendarService;
+
     public List<ActivitatResponseDTO> getAllActivitats() {
         return activitatRepository.findAll()
                 .stream()
                 .map(user -> toDTO(user))
                 .toList();
     }
+
     private ActivitatResponseDTO toDTO(Activitat a) {
         return new ActivitatResponseDTO(
-            a.getId_sala(),
-            a.getGoogleId(),
-            a.getTitol(),
-            a.getResum(),
-            a.getDescripcio(),
-            a.getData(),
-            a.getHoraInici(),
-            a.getHoraFi(),
-            a.getPrioritat(),
-            a.getEstat().name(),
-            a.getVisible()
-        );
+                a.getId_sala(),
+                a.getGoogleId(),
+                a.getTitol(),
+                a.getResum(),
+                a.getDescripcio(),
+                a.getData(),
+                a.getHoraInici(),
+                a.getHoraFi(),
+                a.getEstat().name(),
+                a.getVisible());
     }
+
     private Activitat toModel(ActivitatRequestDTO activitatRequestDTO) {
         Activitat activitat = new Activitat();
         activitat.setId_sala(activitatRequestDTO.getId_sala());
@@ -54,7 +57,6 @@ public class ActivitatService {
         activitat.setData(activitatRequestDTO.getData());
         activitat.setHoraInici(activitatRequestDTO.getHoraInici());
         activitat.setHoraFi(activitatRequestDTO.getHoraFi());
-        activitat.setPrioritat(activitatRequestDTO.getPrioritat());
         activitat.setEstat(activitatRequestDTO.getEstat());
         activitat.setVisible(activitatRequestDTO.getVisible());
 
@@ -62,7 +64,8 @@ public class ActivitatService {
     }
 
     public ActivitatResponseDTO getActivitatById(Long id) {
-        return toDTO(activitatRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Activitat no trobada")));
+        return toDTO(activitatRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Activitat no trobada")));
     }
 
     public ActivitatResponseDTO createActivitat(ActivitatRequestDTO activitatRequestDTO) {
@@ -76,7 +79,19 @@ public class ActivitatService {
             throw new IllegalArgumentException("La descripció és obligatòria");
         }
         Activitat activitat = toModel(activitatRequestDTO);
-        
-        return toDTO(activitatRepository.save(activitat));
+
+        // Sincronizar con Google Calendar
+
+        try {
+            activitat = activitatRepository.save(activitat);
+            String googleId = googleCalendarService.addEvent(activitat);
+            if (googleId != null && !googleId.isBlank()) {
+                activitat.setGoogleId(googleId);
+                activitat = activitatRepository.save(activitat);
+            }
+            return toDTO(activitat);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al crear l'activitat", e);
+        }
     }
 }

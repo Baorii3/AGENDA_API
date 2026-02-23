@@ -19,7 +19,6 @@ public class Activitat {
     private LocalDate data;
     private LocalTime horaInici;
     private LocalTime horaFi;
-    private Integer prioritat;
     private Estat estat;
     private Boolean visible;
     private LocalDateTime dataCreacio;
@@ -43,8 +42,8 @@ public class Activitat {
     public Activitat() {
     }
 
-    public Activitat(Long id_activitat, String google_id, Long id_sala, String titol, String resum, String descripcio,
-            Usuari user, LocalDate data, LocalTime horaInici, LocalTime horaFi, Integer prioritat, Estat estat,
+        public Activitat(Long id_activitat, String google_id, Long id_sala, String titol, String resum, String descripcio,
+            Usuari user, LocalDate data, LocalTime horaInici, LocalTime horaFi, Estat estat,
             Boolean visible) {
         this.id_activitat = id_activitat;
         this.id_sala = id_sala;
@@ -55,7 +54,6 @@ public class Activitat {
         this.data = data;
         this.horaInici = horaInici;
         this.horaFi = horaFi;
-        this.prioritat = prioritat;
         this.estat = estat;
         this.visible = visible;
     }
@@ -130,14 +128,6 @@ public class Activitat {
 
     public void setHoraFi(LocalTime horaFi) {
         this.horaFi = horaFi;
-    }
-
-    public Integer getPrioritat() {
-        return prioritat;
-    }
-
-    public void setPrioritat(Integer prioritat) {
-        this.prioritat = prioritat;
     }
 
     public Estat getEstat() {

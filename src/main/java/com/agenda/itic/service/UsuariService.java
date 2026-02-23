@@ -53,6 +53,8 @@ public class UsuariService {
                 usuari.setEmail(usuariRequestDTO.getEmail());
                 usuari.setRol(Rol.usuari);
                 usuari.setActiu(true);
+                usuari.setProvider(usuariRequestDTO.getProvider() != null ? usuariRequestDTO.getProvider() : "local");
+                usuari.setProviderId(usuariRequestDTO.getProviderId());
             }
             return usuariRepository.save(usuari);
         } catch (Exception e) {
