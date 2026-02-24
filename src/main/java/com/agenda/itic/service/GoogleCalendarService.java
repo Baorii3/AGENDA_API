@@ -48,7 +48,7 @@ public class GoogleCalendarService {
         Event event = new Event().setSummary(activitat.getTitol())
                 .setDescription(activitat.getDescripcio());
 
-        ZoneId zoneId = ZoneId.systemDefault();
+        ZoneId zoneId = ZoneId.of("Europe/Madrid");
         LocalDateTime inicioLocal = LocalDateTime.of(activitat.getData(), activitat.getHoraInici());
         LocalDateTime endLocal = LocalDateTime.of(activitat.getData(), activitat.getHoraFi());
         ZonedDateTime inicioZoned = inicioLocal.atZone(zoneId);
@@ -59,6 +59,7 @@ public class GoogleCalendarService {
 
         event.setStart(new EventDateTime().setDateTime(inicio).setTimeZone(zoneId.getId()));
         event.setEnd(new EventDateTime().setDateTime(end).setTimeZone(zoneId.getId()));
+        System.out.println("Evento creado: " + event);
 
         try {
             Calendar calendar = obtenerClienteCalendar();

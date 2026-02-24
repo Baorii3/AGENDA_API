@@ -55,12 +55,12 @@ public class SalaController {
     }
 
     @DeleteMapping("/salas/{id}")
-    public ResponseEntity<String> deleteSala(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteSala(@PathVariable Long id) {
         boolean eliminat = salaService.deleteSala(id);
-        if (eliminat) {
-            return ResponseEntity.status(HttpStatus.OK).body("Sala elimina correctament");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Sala amb id " + id + " no trobada");
+        if (!eliminat) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
     }
 }

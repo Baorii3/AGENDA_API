@@ -59,11 +59,11 @@ public class UsuariController {
     }
 
     @DeleteMapping("/usuaris/{id}")
-    public ResponseEntity<Usuari> deleteUsuari(@PathVariable Long id) {
-        Usuari deletedUsuari = usuariService.deleteUsuari(id);
-        if (deletedUsuari == null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    public ResponseEntity<Void> deleteUsuari(@PathVariable Long id) {
+        boolean deleted = usuariService.deleteUsuari(id);
+        if (!deleted) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.status(HttpStatus.OK).body(deletedUsuari);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

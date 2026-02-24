@@ -80,11 +80,14 @@ public class UsuariService {
         }
     }
 
-    public Usuari deleteUsuari(Long id) {
+    public boolean deleteUsuari(Long id) {
+        if (!usuariRepository.existsById(id)) {
+            return false;
+        }
+        
         try {
-            Usuari usuari = usuariRepository.findById(id).get();
-            usuariRepository.delete(usuari);
-            return usuari;
+            usuariRepository.deleteById(id);
+            return true;
         } catch (Exception e) {
             throw e;
         }

@@ -54,10 +54,9 @@ public class DispositiuController {
     @DeleteMapping("/dispositius/{id}")
     public ResponseEntity<Void> deleteDispositiu(@PathVariable Long id) {
         boolean deleted = dispositiuService.deleteDispositiu(id);
-        if (deleted) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        if (!deleted) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

@@ -80,8 +80,6 @@ public class ActivitatService {
         }
         Activitat activitat = toModel(activitatRequestDTO);
 
-        // Sincronizar con Google Calendar
-
         try {
             activitat = activitatRepository.save(activitat);
             String googleId = googleCalendarService.addEvent(activitat);
@@ -92,6 +90,18 @@ public class ActivitatService {
             return toDTO(activitat);
         } catch (Exception e) {
             throw new RuntimeException("Error al crear l'activitat", e);
+        }
+    }
+
+    public boolean deleteActivitat(Long id) {
+        try {
+            Activitat activitat = activitatRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Activitat no trobada"));
+            // FALTA ELIMINARLA DEL CALENDARI
+            activitatRepository.deleteById(id);
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException("Error al eliminar l'activitat", e);
         }
     }
 }

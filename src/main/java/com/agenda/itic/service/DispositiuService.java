@@ -1,7 +1,7 @@
 package com.agenda.itic.service;
 
 import java.util.List;
-
+import com.agenda.itic.repository.UsuariRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,8 +12,14 @@ import com.agenda.itic.repository.DispositiuRepository;
 @Service
 public class DispositiuService {
 
+    private final UsuariRepository usuariRepository;
+
     @Autowired
     DispositiuRepository dispositiuRepository;
+
+    DispositiuService(UsuariRepository usuariRepository) {
+        this.usuariRepository = usuariRepository;
+    }
 
     public Dispositiu mapToDispositiu(DispositiuRequestDTO dispositiuDTO) {
         Dispositiu dispositiu = new Dispositiu();
@@ -61,6 +67,9 @@ public class DispositiuService {
     }
 
     public boolean deleteDispositiu(Long id) {
+        if (usuariRepository.existsById(id)) {
+            return false;
+        }
         try {
             dispositiuRepository.deleteById(id);
             return true;
