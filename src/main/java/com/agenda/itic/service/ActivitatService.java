@@ -3,6 +3,7 @@ package com.agenda.itic.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.agenda.itic.dto.ActivitatRequestDTO;
@@ -97,11 +98,14 @@ public class ActivitatService {
         try {
             Activitat activitat = activitatRepository.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("Activitat no trobada"));
-            // FALTA ELIMINARLA DEL CALENDARI
-            activitatRepository.deleteById(id);
+            googleCalendarService.deleteEvent(activitat.getGoogleId());
             return true;
         } catch (Exception e) {
             throw new RuntimeException("Error al eliminar l'activitat", e);
         }
+    }
+
+    public List<Activitat> getActivitatModel() {
+        return activitatRepository.findAll();
     }
 }

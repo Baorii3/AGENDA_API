@@ -69,4 +69,13 @@ public class GoogleCalendarService {
             throw new RuntimeException("Error al añadir evento", e);
         }
     }
+
+    public void deleteEvent(String eventId) {
+        try {
+            Calendar calendar = obtenerClienteCalendar();
+            calendar.events().delete(CALENDAR_ID, eventId).execute();
+        } catch (Exception e) {
+            throw new RuntimeException("Error al eliminar evento", e);
+        }
+    }
 }

@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.agenda.itic.dto.ActivitatRequestDTO;
 import com.agenda.itic.dto.ActivitatResponseDTO;
+import com.agenda.itic.model.Activitat;
 import com.agenda.itic.service.ActivitatService;
 
 import java.util.List;
@@ -26,7 +27,10 @@ public class ActivitatController {
 
     @Autowired
     ActivitatService activitatService;
-
+    @GetMapping("/activitats/model")
+    public ResponseEntity<List<Activitat>> getActivitatModel() {
+        return ResponseEntity.ok(activitatService.getActivitatModel());
+    }
     @GetMapping("/activitats")
     public ResponseEntity<List<ActivitatResponseDTO>> getAllActivitats() {
         return ResponseEntity.status(HttpStatus.OK).body(activitatService.getAllActivitats());
@@ -44,11 +48,17 @@ public class ActivitatController {
     }
 
     @DeleteMapping("/activitat/{id}")
-    public ResponseEntity<String> deleteActivitat(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteActivitat(@PathVariable Long id) {
         boolean deleted = activitatService.deleteActivitat(id);
         if (!deleted) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar l'activitat amb id: " + id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.status(HttpStatus.OK).body("Activitat eliminada correctament amb id: " + id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @DeleteMapping("/activitats")
+    public ResponseEntity<Void> deleteAllActivitats() {
+        activitatService.getActivitatModel().forEach(a -> activitatService.deleteActivitat(a.getId_activitat()));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
