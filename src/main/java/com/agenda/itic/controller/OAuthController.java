@@ -1,6 +1,9 @@
 package com.agenda.itic.controller;
 
 import org.springframework.security.core.Authentication;
+
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.agenda.itic.dto.UsuariRequestDTO;
 import com.agenda.itic.model.Usuari;
 import com.agenda.itic.service.UsuariService;
+
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.web.bind.annotation.GetMapping;
 
 
@@ -24,7 +30,7 @@ public class OAuthController {
     UsuariService usuariService;
     
     @GetMapping("/home")
-    public ResponseEntity<String> home(Authentication authentication) {
+    public void home(Authentication authentication, HttpServletResponse response) {
         OAuth2User user = (OAuth2User) authentication.getPrincipal();
         UsuariRequestDTO dto = new UsuariRequestDTO();
         dto.setEmail(user.getAttribute("email"));
@@ -36,9 +42,22 @@ public class OAuthController {
         Usuari usuari = usuariService.createOrUpdateOAuthUsuari(dto);
 
         if (usuari == null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al crear l'usuari");
+            try {
+                response.sendRedirect("http://localhost:8085/home");
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+                e.printStackTrace();
+            }
+            return;
         }
-        return ResponseEntity.ok("Usuari creat correctament");
+
+    
+        try {
+            response.sendRedirect("http://localhost:8081?token=" );
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
     }   
 
     
