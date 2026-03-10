@@ -23,9 +23,12 @@ public class SecurityConfig {
                         .requestMatchers("/oauth2/**").permitAll()
                         .requestMatchers("/login/**").permitAll()
                         .requestMatchers("/usuaris/**").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/swagger-ui.html").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth -> oauth
-                        .defaultSuccessUrl("/oauth/google/home", true));
+                        .defaultSuccessUrl("http://localhost:8081/", true));
 
         return http.build();
     }
