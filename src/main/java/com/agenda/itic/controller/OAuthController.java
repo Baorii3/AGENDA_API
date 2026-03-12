@@ -53,7 +53,7 @@ public class OAuthController {
 
     
         try {
-            response.sendRedirect("http://localhost:8081?token=");
+            response.sendRedirect("http://localhost:8081");
         } catch (IOException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
