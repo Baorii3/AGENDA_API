@@ -99,6 +99,7 @@ public class ActivitatService {
             Activitat activitat = activitatRepository.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("Activitat no trobada"));
             googleCalendarService.deleteEvent(activitat.getGoogleId());
+            activitatRepository.delete(activitat);
             return true;
         } catch (Exception e) {
             throw new RuntimeException("Error al eliminar l'activitat", e);
