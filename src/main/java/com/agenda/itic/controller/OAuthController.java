@@ -4,6 +4,7 @@ import org.springframework.security.core.Authentication;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,9 @@ public class OAuthController {
     @Autowired
     UsuariService usuariService;
     
+    @Value("${app.frontend.url}")
+    private String frontendUrl;
+    
     @GetMapping("/home")
     public void home(Authentication authentication, HttpServletResponse response) {
         OAuth2User user = (OAuth2User) authentication.getPrincipal();
@@ -43,7 +47,7 @@ public class OAuthController {
 
         if (usuari == null) {
             try {
-                response.sendRedirect("http://localhost:8085/home");
+                response.sendRedirect(frontendUrl + "/home");
             } catch (IOException e) {
                 System.out.println(e.getMessage());
                 e.printStackTrace();
@@ -53,7 +57,7 @@ public class OAuthController {
 
     
         try {
-            response.sendRedirect("http://localhost:8081?token=");
+            response.sendRedirect(frontendUrl + "?token=");
         } catch (IOException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
