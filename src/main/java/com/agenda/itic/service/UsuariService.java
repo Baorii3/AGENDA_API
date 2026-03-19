@@ -16,6 +16,9 @@ public class UsuariService {
     @Autowired
     UsuariRepository usuariRepository;
 
+    @Autowired
+    CorreoPermitidoService correoPermitidoService;
+
     public List<Usuari> getUsuaris() {
         return usuariRepository.findAll();
     }
@@ -25,7 +28,7 @@ public class UsuariService {
     }
 
     public Usuari createUsuari(UsuariRequestDTO usuariRequestDTO) {
-        if (usuariRequestDTO == null) {
+        if (correoPermitidoService.getCorreoPermitido(usuariRequestDTO.getEmail()) == null) {
             return null;
         }
         try {

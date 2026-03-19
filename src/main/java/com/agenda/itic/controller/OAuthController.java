@@ -29,21 +29,39 @@ public class OAuthController {
     
     @Autowired
     UsuariService usuariService;
+
+    @Autowired
+    CorreoPermitidoController correoPermitidoController;
     
     @Value("${app.frontend.url}")
     private String frontendUrl;
     
     @GetMapping("/home")
     public void home(Authentication authentication, HttpServletResponse response) {
+        
         OAuth2User user = (OAuth2User) authentication.getPrincipal();
+
+        String email = user.getAttribute("email");
+
+        if (correoPermitidoController.getCorreoPermitido(email) == null) {
+            try {
+                response.sendRedirect(frontendUrl + "/unauthorized");
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+                e.printStackTrace();
+            }
+            return;
+        }
+
         UsuariRequestDTO dto = new UsuariRequestDTO();
-        dto.setEmail(user.getAttribute("email"));
+        dto.setEmail(email);
         dto.setNom(user.getAttribute("name"));  
         String providerName = "google";
         dto.setProvider(providerName);
         String providerId = user.getName();
         dto.setProviderId(providerId);
         Usuari usuari = usuariService.createOrUpdateOAuthUsuari(dto);
+
 
         if (usuari == null) {
             try {

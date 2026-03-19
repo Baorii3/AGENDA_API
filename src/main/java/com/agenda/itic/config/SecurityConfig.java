@@ -24,6 +24,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/activitats/activitats").permitAll()
                         .requestMatchers(HttpMethod.GET, "/activitats/activitat/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/correos-permitidos/**").permitAll()
                         .requestMatchers("/oauth2/**").permitAll()
                         .requestMatchers("/login/**").permitAll()
                         .requestMatchers("/usuaris/**").permitAll()
