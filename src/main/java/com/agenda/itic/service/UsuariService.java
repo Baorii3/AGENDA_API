@@ -49,6 +49,9 @@ public class UsuariService {
         if (usuariRequestDTO == null || usuariRequestDTO.getEmail() == null) {
             return null;
         }
+        if (correoPermitidoService.getCorreoPermitido(usuariRequestDTO.getEmail()) == null) {
+            return null;
+        }
         try {
             Usuari usuari = usuariRepository.findByEmail(usuariRequestDTO.getEmail()).orElseGet(Usuari::new);
             if (usuari.getId() == null) {
