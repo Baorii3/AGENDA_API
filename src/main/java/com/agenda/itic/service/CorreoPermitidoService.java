@@ -22,12 +22,12 @@ public class CorreoPermitidoService {
     }
 
 
-    public CorreoPermitido createCorreoPermitido(CorreoPermitido correoPermitido) {
-        if (correopermitidorepository.findByCorreo(correoPermitido.getCorreo()) != null) {
+    public CorreoPermitido createCorreoPermitido(String correoPermitidoStr) {
+        if (correopermitidorepository.findByCorreo(correoPermitidoStr) != null) {
             throw new RuntimeException("Correo ya registrado");
         }
         try {
-            return correopermitidorepository.save(correoPermitido);
+            return correopermitidorepository.save(new CorreoPermitido(correoPermitidoStr));
         } catch (Exception e) {
             throw new RuntimeException("Error creando un correo permitido", e);
         }

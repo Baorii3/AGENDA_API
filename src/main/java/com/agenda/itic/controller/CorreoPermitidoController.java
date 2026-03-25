@@ -32,8 +32,8 @@ public class CorreoPermitidoController {
     }
 
     @PostMapping("/correos-permitidos")
-    public ResponseEntity<CorreoPermitido> createCorreoPermitido(@RequestBody CorreoPermitido correoPermitido) {
-        CorreoPermitido createdCorreoPermitido = correoPermitidoService.createCorreoPermitido(correoPermitido);
+    public ResponseEntity<CorreoPermitido> createCorreoPermitido(@PathVariable String correoPermitidoStr) {
+        CorreoPermitido createdCorreoPermitido = correoPermitidoService.createCorreoPermitido(correoPermitidoStr);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCorreoPermitido);
     }
 
