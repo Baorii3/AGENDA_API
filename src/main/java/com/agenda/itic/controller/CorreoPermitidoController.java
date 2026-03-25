@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.agenda.itic.service.CorreoPermitidoService;
 import com.agenda.itic.model.CorreoPermitido;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/correos-permitidos")
