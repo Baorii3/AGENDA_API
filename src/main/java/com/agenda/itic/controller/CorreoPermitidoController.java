@@ -30,7 +30,7 @@ public class CorreoPermitidoController {
         return ResponseEntity.ok(correoPermitidoService.getCorreoPermitido(email));
     }
 
-    @PostMapping("/correos-permitidos")
+    @PostMapping("/correos-permitidos/{correoPermitidoStr}")
     public ResponseEntity<CorreoPermitido> createCorreoPermitido(@PathVariable String correoPermitidoStr) {
         CorreoPermitido createdCorreoPermitido = correoPermitidoService.createCorreoPermitido(correoPermitidoStr);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCorreoPermitido);
