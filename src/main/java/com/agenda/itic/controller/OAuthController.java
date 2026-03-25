@@ -4,6 +4,7 @@ import org.springframework.security.core.Authentication;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,12 +29,32 @@ public class OAuthController {
     
     @Autowired
     UsuariService usuariService;
+
+    @Autowired
+    CorreoPermitidoController correoPermitidoController;
+    
+    @Value("${app.frontend.url}")
+    private String frontendUrl;
     
     @GetMapping("/home")
     public void home(Authentication authentication, HttpServletResponse response) {
+        
         OAuth2User user = (OAuth2User) authentication.getPrincipal();
+
+        String email = user.getAttribute("email");
+
+        if (correoPermitidoController.getCorreoPermitido(email) == null) {
+            try {
+                response.sendRedirect(frontendUrl + "/unauthorized");
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+                e.printStackTrace();
+            }
+            return;
+        }
+
         UsuariRequestDTO dto = new UsuariRequestDTO();
-        dto.setEmail(user.getAttribute("email"));
+        dto.setEmail(email);
         dto.setNom(user.getAttribute("name"));  
         String providerName = "google";
         dto.setProvider(providerName);
@@ -41,9 +62,10 @@ public class OAuthController {
         dto.setProviderId(providerId);
         Usuari usuari = usuariService.createOrUpdateOAuthUsuari(dto);
 
+
         if (usuari == null) {
             try {
-                response.sendRedirect("http://localhost:8085/home");
+                response.sendRedirect(frontendUrl + "/home");
             } catch (IOException e) {
                 System.out.println(e.getMessage());
                 e.printStackTrace();
@@ -53,7 +75,7 @@ public class OAuthController {
 
     
         try {
-            response.sendRedirect("http://localhost:8081");
+            response.sendRedirect(frontendUrl + "?token=");
         } catch (IOException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
