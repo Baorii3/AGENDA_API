@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.agenda.itic.service.CorreoPermitidoService;
 import com.agenda.itic.model.CorreoPermitido;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/correos-permitidos")
@@ -21,7 +21,7 @@ public class CorreoPermitidoController {
     @Autowired
     CorreoPermitidoService correoPermitidoService;
 
-    @GetMapping("/correos-permitidos") 
+    @GetMapping("/correos-permitidos")
     public ResponseEntity<List<CorreoPermitido>> getAllCorreosPermitidos() {
         return ResponseEntity.ok(correoPermitidoService.getAllCorreosPermitidos());
     }
