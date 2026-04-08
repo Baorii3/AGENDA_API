@@ -42,7 +42,7 @@ public class Activitat {
     public Activitat() {
     }
 
-        public Activitat(Long id_activitat, String google_id, Long id_sala, String titol, String resum, String descripcio,
+    public Activitat(Long id_activitat, String google_id, Long id_sala, String titol, String resum, String descripcio,
             Usuari user, LocalDate data, LocalTime horaInici, LocalTime horaFi, Estat estat,
             Boolean visible) {
         this.id_activitat = id_activitat;

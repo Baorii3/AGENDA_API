@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.agenda.itic.dto.UsuariRequestDTO;
 import com.agenda.itic.model.Usuari;
+import com.agenda.itic.service.CorreoPermitidoService;
 import com.agenda.itic.service.UsuariService;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,7 +32,7 @@ public class OAuthController {
     UsuariService usuariService;
 
     @Autowired
-    CorreoPermitidoController correoPermitidoController;
+    CorreoPermitidoService correoPermitidoService;
     
     @Value("${app.frontend.url}")
     private String frontendUrl;
@@ -43,9 +44,9 @@ public class OAuthController {
 
         String email = user.getAttribute("email");
 
-        if (correoPermitidoController.getCorreoPermitido(email) == null) {
+        if (correoPermitidoService.getCorreoPermitido(email) == null) {
             try {
-                response.sendRedirect(frontendUrl + "/unauthorized");
+                response.sendRedirect(frontendUrl + "/login.html?error=unauthorized");
             } catch (IOException e) {
                 System.out.println(e.getMessage());
                 e.printStackTrace();

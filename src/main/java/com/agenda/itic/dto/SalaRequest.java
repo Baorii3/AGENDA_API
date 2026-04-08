@@ -1,21 +1,19 @@
 package com.agenda.itic.dto;
 
-import com.agenda.itic.model.Sala.TipusSala;
+import com.agenda.itic.model.Sala.PisoSala;
 
 public class SalaRequest {
 
     private String nom;
-    private TipusSala tipus;
-    private String ubicacio;
+    private PisoSala ubicacio;
     private String descripcio;
     private Boolean activa;
 
     public SalaRequest() {
     }
 
-    public SalaRequest(String nom, TipusSala tipus, String ubicacio, String descripcio, Boolean activa) {
+    public SalaRequest(String nom, PisoSala ubicacio, String descripcio, Boolean activa) {
         this.nom = nom;
-        this.tipus = tipus;
         this.ubicacio = ubicacio;
         this.descripcio = descripcio;
         this.activa = activa;
@@ -29,19 +27,11 @@ public class SalaRequest {
         this.nom = nom;
     }
 
-    public TipusSala getTipus() {
-        return tipus;
-    }
-
-    public void setTipus(TipusSala tipus) {
-        this.tipus = tipus;
-    }
-
-    public String getUbicacio() {
+    public PisoSala getUbicacio() {
         return ubicacio;
     }
 
-    public void setUbicacio(String ubicacio) {
+    public void setUbicacio(PisoSala ubicacio) {
         this.ubicacio = ubicacio;
     }
 

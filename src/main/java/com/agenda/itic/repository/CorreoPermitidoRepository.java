@@ -8,4 +8,6 @@ import com.agenda.itic.model.CorreoPermitido;
 public interface CorreoPermitidoRepository extends JpaRepository<CorreoPermitido, Long> {
     
     CorreoPermitido findByCorreo(String correo);
+
+    CorreoPermitido findByCorreoIgnoreCase(String correo);
 }

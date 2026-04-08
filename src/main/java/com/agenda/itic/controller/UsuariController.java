@@ -19,6 +19,7 @@ import com.agenda.itic.model.Usuari;
 import com.agenda.itic.service.UsuariService;
 
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 @RestController
 @RequestMapping("/usuaris")
@@ -65,5 +66,23 @@ public class UsuariController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PostMapping("/token")
+    public ResponseEntity<?> createOrUpdateUsuariFromToken(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authorization inválido. Debe empezar por Bearer");
+        }
+
+        String token = authHeader.substring(7).trim();
+        if (token.isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El token está vacío");
+        }
+
+        Usuari createdOrUpdateUsuari = usuariService.createOrUpdateUsuariFromToken(token);
+        if (createdOrUpdateUsuari == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al crear o actualizar el usuario");
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdOrUpdateUsuari);
     }
 }

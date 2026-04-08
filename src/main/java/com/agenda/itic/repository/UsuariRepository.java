@@ -10,5 +10,6 @@ import com.agenda.itic.model.Usuari;
 @Repository
 public interface UsuariRepository extends JpaRepository<Usuari, Long> {
     List<Usuari> findByActiu(boolean actiu);
+
     Optional<Usuari> findByEmail(String email);
 }

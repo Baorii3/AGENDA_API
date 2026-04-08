@@ -26,7 +26,6 @@ public class SalaService {
         try {
             Sala sala = new Sala();
             sala.setNom(salaRequest.getNom());
-            sala.setTipus(salaRequest.getTipus());
             sala.setUbicacio(salaRequest.getUbicacio());
             sala.setDescripcio(salaRequest.getDescripcio());
             sala.setActiva(salaRequest.getActiva());
@@ -44,7 +43,6 @@ public class SalaService {
             Sala sala = salaRepository.findById(id).orElse(null);
             if (sala != null) {
                 sala.setNom(salaRequest.getNom());
-                sala.setTipus(salaRequest.getTipus());
                 sala.setUbicacio(salaRequest.getUbicacio());
                 sala.setDescripcio(salaRequest.getDescripcio());
                 sala.setActiva(salaRequest.getActiva());

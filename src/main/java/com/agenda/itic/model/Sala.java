@@ -11,15 +11,14 @@ public class Sala {
     private Long id_sala;
     private String nom;
     @Enumerated(EnumType.STRING)
-    private TipusSala tipus;
-    private String ubicacio;
+    private PisoSala ubicacio;
     private String descripcio;
     private Boolean activa = true;
     private LocalDateTime dataCreacio;
     private LocalDateTime dataModificacio;
 
-    public enum TipusSala {
-        agora, ateca
+    public enum PisoSala {
+        P0, P4, P5
     }
 
     @PrePersist
@@ -36,10 +35,9 @@ public class Sala {
     public Sala() {
     }
 
-    public Sala(Long id_sala, String nom, TipusSala tipus, String ubicacio, String descripcio, Boolean activa) {
+    public Sala(Long id_sala, String nom, PisoSala ubicacio, String descripcio, Boolean activa) {
         this.id_sala = id_sala;
         this.nom = nom;
-        this.tipus = tipus;
         this.ubicacio = ubicacio;
         this.descripcio = descripcio;
         this.activa = activa;
@@ -61,19 +59,11 @@ public class Sala {
         this.nom = nom;
     }
 
-    public TipusSala getTipus() {
-        return tipus;
-    }
-
-    public void setTipus(TipusSala tipus) {
-        this.tipus = tipus;
-    }
-
-    public String getUbicacio() {
+    public PisoSala getUbicacio() {
         return ubicacio;
     }
 
-    public void setUbicacio(String ubicacio) {
+    public void setUbicacio(PisoSala ubicacio) {
         this.ubicacio = ubicacio;
     }
 
