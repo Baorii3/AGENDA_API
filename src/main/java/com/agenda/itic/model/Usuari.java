@@ -25,6 +25,8 @@ public class Usuari {
     private String provider;
     private String providerId;
 
+    private String fotoPerfil;
+
     public enum Rol {
         admin, usuari
     }
@@ -43,7 +45,8 @@ public class Usuari {
     public Usuari() {
     }
 
-    public Usuari(Long id_usuari, String nom, String email, Rol rol, Boolean actiu, String provider, String providerId) {
+    public Usuari(Long id_usuari, String nom, String email, Rol rol, Boolean actiu, String provider,
+            String providerId) {
         this.id_usuari = id_usuari;
         this.nom = nom;
         this.email = email;
@@ -123,5 +126,13 @@ public class Usuari {
 
     public void setProviderId(String providerId) {
         this.providerId = providerId;
+    }
+
+    public String getFotoPerfil() {
+        return fotoPerfil;
+    }
+
+    public void setFotoPerfil(String fotoPerfil) {
+        this.fotoPerfil = fotoPerfil;
     }
 }

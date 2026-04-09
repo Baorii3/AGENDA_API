@@ -9,6 +9,7 @@ public class UsuariRequestDTO {
     private Boolean actiu;
     private String provider;
     private String providerId;
+    private String fotoPerfil;
 
     public UsuariRequestDTO() {
     }
@@ -66,5 +67,13 @@ public class UsuariRequestDTO {
 
     public void setProviderId(String providerId) {
         this.providerId = providerId;
+    }
+
+    public String getFotoPerfil() {
+        return fotoPerfil;
+    }
+
+    public void setFotoPerfil(String fotoPerfil) {
+        this.fotoPerfil = fotoPerfil;
     }
 }

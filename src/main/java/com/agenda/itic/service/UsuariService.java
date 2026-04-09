@@ -48,6 +48,7 @@ public class UsuariService {
             usuari.setActiu(usuariRequestDTO.getActiu() != null ? usuariRequestDTO.getActiu() : false);
             usuari.setProvider(usuariRequestDTO.getProvider() != null ? usuariRequestDTO.getProvider() : "local");
             usuari.setProviderId(usuariRequestDTO.getProviderId());
+            usuari.setFotoPerfil(usuariRequestDTO.getFotoPerfil());
             return usuariRepository.save(usuari);
         } catch (Exception e) {
             throw e;
@@ -70,6 +71,7 @@ public class UsuariService {
                 usuari.setActiu(true);
                 usuari.setProvider(usuariRequestDTO.getProvider() != null ? usuariRequestDTO.getProvider() : "local");
                 usuari.setProviderId(usuariRequestDTO.getProviderId());
+                usuari.setFotoPerfil(usuariRequestDTO.getFotoPerfil());
             }
             return usuariRepository.save(usuari);
         } catch (Exception e) {
@@ -87,8 +89,13 @@ public class UsuariService {
             usuari.setEmail(usuariRequestDTO.getEmail());
             usuari.setRol(usuariRequestDTO.getRol() != null ? usuariRequestDTO.getRol() : Rol.usuari);
             usuari.setActiu(usuariRequestDTO.getActiu() != null ? usuariRequestDTO.getActiu() : false);
-            usuari.setProvider(usuariRequestDTO.getProvider() != null ? usuariRequestDTO.getProvider() : usuari.getProvider());
-            usuari.setProviderId(usuariRequestDTO.getProviderId() != null ? usuariRequestDTO.getProviderId() : usuari.getProviderId());
+            usuari.setProvider(
+                    usuariRequestDTO.getProvider() != null ? usuariRequestDTO.getProvider() : usuari.getProvider());
+            usuari.setProviderId(usuariRequestDTO.getProviderId() != null ? usuariRequestDTO.getProviderId()
+                    : usuari.getProviderId());
+            if (usuariRequestDTO.getFotoPerfil() != null) {
+                usuari.setFotoPerfil(usuariRequestDTO.getFotoPerfil());
+            }
             return usuariRepository.save(usuari);
         } catch (Exception e) {
             throw e;
@@ -99,7 +106,7 @@ public class UsuariService {
         if (!usuariRepository.existsById(id)) {
             return false;
         }
-        
+
         try {
             usuariRepository.deleteById(id);
             return true;
@@ -107,7 +114,6 @@ public class UsuariService {
             throw e;
         }
     }
-
 
     // Crearemos un usuario o no, a traves de un token
     public Usuari createOrUpdateUsuariFromToken(String token) {
@@ -122,13 +128,14 @@ public class UsuariService {
             return usuariOptional.get();
         } else {
             if (correoPermitidoService.getCorreoPermitido(email) == null) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Correo no permitido en la lista blanca");            
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Correo no permitido en la lista blanca");
             }
         }
-        
+
         Usuari user = new Usuari();
         user.setEmail(email);
         user.setNom(getTokenName(token) == null ? "Desconocido" : getTokenName(token));
+        user.setFotoPerfil(getTokenPicture(token));
         user.setRol(Rol.usuari);
         user.setActiu(true);
         user.setProvider(getTokenProvider(token) == null ? "cognito" : getTokenProvider(token));
@@ -189,6 +196,32 @@ public class UsuariService {
             Object name = claims.get("name");
 
             return name != null ? name.toString() : null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private String getTokenPicture(String token) {
+        if (token == null || token.isBlank()) {
+            return null;
+        }
+
+        try {
+            String normalizedToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token;
+            String[] parts = normalizedToken.split("\\.");
+            if (parts.length != 3) {
+                return null;
+            }
+
+            byte[] decoded = Base64.getUrlDecoder().decode(parts[1]);
+            String payload = new String(decoded, StandardCharsets.UTF_8);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> claims = objectMapper.readValue(payload, new TypeReference<Map<String, Object>>() {
+            });
+            Object picture = claims.get("picture");
+
+            return picture != null ? picture.toString() : null;
         } catch (Exception e) {
             return null;
         }
