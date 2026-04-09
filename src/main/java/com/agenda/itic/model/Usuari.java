@@ -28,7 +28,7 @@ public class Usuari {
     private String fotoPerfil;
 
     public enum Rol {
-        admin, usuari
+        admin, professor, usuari
     }
 
     @PrePersist

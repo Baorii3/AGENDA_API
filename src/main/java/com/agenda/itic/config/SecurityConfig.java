@@ -1,6 +1,7 @@
 package com.agenda.itic.config;
 
 import java.util.Collection;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -24,7 +25,26 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, CustomOAuth2UserService customOAuth2UserService)
+    @ConditionalOnProperty(name = "spring.profiles.active", havingValue = "local", matchIfMissing = false)
+    public SecurityFilterChain filterChainLocal(HttpSecurity http) throws Exception {
+        http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/activitats/**").permitAll()
+                        .requestMatchers("/sala/**").permitAll()
+                        .requestMatchers("/correos-permitidos/**").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/swagger-ui.html").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .anyRequest().permitAll());
+        return http.build();
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "spring.profiles.active", havingValue = "prod")
+    public SecurityFilterChain filterChainProd(HttpSecurity http, CustomOAuth2UserService customOAuth2UserService)
             throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))

@@ -37,7 +37,7 @@ public class OAuthController {
     @Value("${app.frontend.url}")
     private String frontendUrl;
     
-    @GetMapping("/home")
+    /*@GetMapping("/home")
     public void home(Authentication authentication, HttpServletResponse response) {
         
         OAuth2User user = (OAuth2User) authentication.getPrincipal();
@@ -81,7 +81,7 @@ public class OAuthController {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
-    }   
+    }  */ 
 
     
     

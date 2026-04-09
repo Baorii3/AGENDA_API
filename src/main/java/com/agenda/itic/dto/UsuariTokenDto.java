@@ -1,24 +1,13 @@
 package com.agenda.itic.dto;
 
-import com.agenda.itic.model.Usuari;
-
-public class UsuariRequestDTO {
+public class UsuariTokenDto {
     private String nom;
     private String email;
-    private Usuari.Rol rol;
-    private Boolean actiu;
     private String provider;
     private String providerId;
     private String fotoPerfil;
 
-    public UsuariRequestDTO() {
-    }
-
-    public UsuariRequestDTO(String nom, String email, Usuari.Rol rol, Boolean actiu) {
-        this.nom = nom;
-        this.email = email;
-        this.rol = rol;
-        this.actiu = actiu;
+    public UsuariTokenDto() {
     }
 
     public String getNom() {
@@ -35,22 +24,6 @@ public class UsuariRequestDTO {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public Usuari.Rol getRol() {
-        return rol;
-    }
-
-    public void setRol(Usuari.Rol rol) {
-        this.rol = rol;
-    }
-
-    public Boolean getActiu() {
-        return actiu;
-    }
-
-    public void setActiu(Boolean actiu) {
-        this.actiu = actiu;
     }
 
     public String getProvider() {

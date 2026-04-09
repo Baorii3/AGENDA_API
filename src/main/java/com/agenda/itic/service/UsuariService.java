@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.agenda.itic.dto.UsuariRequestDTO;
+import com.agenda.itic.dto.UsuariTokenDto;
 import com.agenda.itic.model.Usuari;
 import com.agenda.itic.model.Usuari.Rol;
 import com.agenda.itic.repository.UsuariRepository;
@@ -36,80 +36,43 @@ public class UsuariService {
         return usuariRepository.findByActiu(actiu);
     }
 
-    public Usuari createUsuari(UsuariRequestDTO usuariRequestDTO) {
-        if (correoPermitidoService.getCorreoPermitido(usuariRequestDTO.getEmail()) == null) {
-            return null;
-        }
-        try {
-            Usuari usuari = new Usuari();
-            usuari.setNom(usuariRequestDTO.getNom());
-            usuari.setEmail(usuariRequestDTO.getEmail());
-            usuari.setRol(usuariRequestDTO.getRol() != null ? usuariRequestDTO.getRol() : Rol.usuari);
-            usuari.setActiu(usuariRequestDTO.getActiu() != null ? usuariRequestDTO.getActiu() : false);
-            usuari.setProvider(usuariRequestDTO.getProvider() != null ? usuariRequestDTO.getProvider() : "local");
-            usuari.setProviderId(usuariRequestDTO.getProviderId());
-            usuari.setFotoPerfil(usuariRequestDTO.getFotoPerfil());
-            return usuariRepository.save(usuari);
-        } catch (Exception e) {
-            throw e;
-        }
+
+    // ELIMINAR PARA FINAL
+    private Usuari mapToUsuari(UsuariTokenDto usuariRequestDTO) {
+        Usuari usuari = new Usuari();
+        usuari.setNom(usuariRequestDTO.getNom());
+        usuari.setEmail(usuariRequestDTO.getEmail());
+        usuari.setRol(getRol(usuariRequestDTO.getEmail()));
+        usuari.setActiu(true);
+        usuari.setProvider(usuariRequestDTO.getProvider() != null ? usuariRequestDTO.getProvider() : "local");
+        usuari.setProviderId(usuariRequestDTO.getProviderId());
+        usuari.setFotoPerfil(usuariRequestDTO.getFotoPerfil());
+        return usuari;
     }
 
-    public Usuari createOrUpdateOAuthUsuari(UsuariRequestDTO usuariRequestDTO) {
+    private Rol getRol(String email) {
+        Rol rol = Rol.usuari;
+        if (correoPermitidoService.getCorreoPermitido(email) != null) {
+            rol = Rol.admin;
+        } else if (!email.contains("@iticbcn.cat")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email no válido");
+        } else if (!email.contains("_")) {
+            rol = Rol.professor;
+        }
+        return rol;
+    }
+
+    // ELIMINAR PARA FINAL
+    public Usuari createUsuari(UsuariTokenDto usuariRequestDTO) {
         if (usuariRequestDTO == null || usuariRequestDTO.getEmail() == null) {
             return null;
         }
-        if (correoPermitidoService.getCorreoPermitido(usuariRequestDTO.getEmail()) == null) {
-            return null;
-        }
+        Rol rol = getRol(usuariRequestDTO.getEmail());
+
         try {
-            Usuari usuari = usuariRepository.findByEmail(usuariRequestDTO.getEmail()).orElseGet(Usuari::new);
-            if (usuari.getId() == null) {
-                usuari.setNom(usuariRequestDTO.getNom());
-                usuari.setEmail(usuariRequestDTO.getEmail());
-                usuari.setRol(Rol.usuari);
-                usuari.setActiu(true);
-                usuari.setProvider(usuariRequestDTO.getProvider() != null ? usuariRequestDTO.getProvider() : "local");
-                usuari.setProviderId(usuariRequestDTO.getProviderId());
-                usuari.setFotoPerfil(usuariRequestDTO.getFotoPerfil());
-            }
+            Usuari usuari = mapToUsuari(usuariRequestDTO);
+            usuari.setRol(rol);
             return usuariRepository.save(usuari);
-        } catch (Exception e) {
-            throw e;
-        }
-    }
-
-    public Usuari updateUsuari(Long id, UsuariRequestDTO usuariRequestDTO) {
-        if (usuariRequestDTO == null) {
-            return null;
-        }
-        try {
-            Usuari usuari = usuariRepository.findById(id).get();
-            usuari.setNom(usuariRequestDTO.getNom());
-            usuari.setEmail(usuariRequestDTO.getEmail());
-            usuari.setRol(usuariRequestDTO.getRol() != null ? usuariRequestDTO.getRol() : Rol.usuari);
-            usuari.setActiu(usuariRequestDTO.getActiu() != null ? usuariRequestDTO.getActiu() : false);
-            usuari.setProvider(
-                    usuariRequestDTO.getProvider() != null ? usuariRequestDTO.getProvider() : usuari.getProvider());
-            usuari.setProviderId(usuariRequestDTO.getProviderId() != null ? usuariRequestDTO.getProviderId()
-                    : usuari.getProviderId());
-            if (usuariRequestDTO.getFotoPerfil() != null) {
-                usuari.setFotoPerfil(usuariRequestDTO.getFotoPerfil());
-            }
-            return usuariRepository.save(usuari);
-        } catch (Exception e) {
-            throw e;
-        }
-    }
-
-    public boolean deleteUsuari(Long id) {
-        if (!usuariRepository.existsById(id)) {
-            return false;
-        }
-
-        try {
-            usuariRepository.deleteById(id);
-            return true;
         } catch (Exception e) {
             throw e;
         }
@@ -136,7 +99,7 @@ public class UsuariService {
         user.setEmail(email);
         user.setNom(getTokenName(token) == null ? "Desconocido" : getTokenName(token));
         user.setFotoPerfil(getTokenPicture(token));
-        user.setRol(Rol.usuari);
+        user.setRol(getRol(email));
         user.setActiu(true);
         user.setProvider(getTokenProvider(token) == null ? "cognito" : getTokenProvider(token));
         user.setProviderId(getTokenProviderId(token));
@@ -147,6 +110,42 @@ public class UsuariService {
 
         }
         return user;
+    }
+
+    public Usuari updateUsuari(Long id, UsuariTokenDto usuariRequestDTO) {
+        if (usuariRequestDTO == null) {
+            return null;
+        }
+        try {
+            Usuari usuari = usuariRepository.findById(id).get();
+            usuari.setNom(usuariRequestDTO.getNom());
+            usuari.setEmail(usuariRequestDTO.getEmail());
+            usuari.setRol(getRol(usuariRequestDTO.getEmail()));
+            usuari.setActiu(true);
+            usuari.setProvider(
+                    usuariRequestDTO.getProvider() != null ? usuariRequestDTO.getProvider() : usuari.getProvider());
+            usuari.setProviderId(usuariRequestDTO.getProviderId() != null ? usuariRequestDTO.getProviderId()
+                    : usuari.getProviderId());
+            if (usuariRequestDTO.getFotoPerfil() != null) {
+                usuari.setFotoPerfil(usuariRequestDTO.getFotoPerfil());
+            }
+            return usuariRepository.save(usuari);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    public boolean deleteUsuari(Long id) {
+        if (!usuariRepository.existsById(id)) {
+            return false;
+        }
+
+        try {
+            usuariRepository.deleteById(id);
+            return true;
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
     private String getTokenEmail(String token) {
