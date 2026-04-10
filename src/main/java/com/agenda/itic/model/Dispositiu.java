@@ -17,7 +17,7 @@ public class Dispositiu {
     private String marca;
     private String numero_serie;
     private String sala;
-    private Boolean actiu;
+    private boolean actiu;
     private LocalDateTime dataCreacio;
     private LocalDateTime dataModificacio;
 
@@ -36,7 +36,7 @@ public class Dispositiu {
     }
 
     public Dispositiu(Long id_dispositiu, String nom, String ip, String mac, String model, String tipus,
-            String marca, String numero_serie, String sala, Boolean actiu) {
+            String marca, String numero_serie, String sala, boolean actiu) {
         this.id_dispositiu = id_dispositiu;
         this.nom = nom;
         this.ip = ip;
@@ -121,11 +121,11 @@ public class Dispositiu {
         this.model = model;
     }
 
-    public Boolean getActiu() {
+    public boolean getActiu() {
         return actiu;
     }
 
-    public void setActiu(Boolean actiu) {
+    public void setActiu(boolean actiu) {
         this.actiu = actiu;
     }
 

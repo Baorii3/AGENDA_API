@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.agenda.itic.dto.UsuariRequestDTO;
-import com.agenda.itic.model.Usuari;
+import com.agenda.itic.dto.UsuariResponseDto;
+import com.agenda.itic.dto.UsuariTokenDto;
 import com.agenda.itic.service.UsuariService;
+
+import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -30,59 +32,38 @@ public class UsuariController {
     UsuariService usuariService;
 
     @GetMapping("/usuaris")
-    public ResponseEntity<List<Usuari>> getUsuaris() {
-        List<Usuari> usuaris = usuariService.getUsuaris();
+    public ResponseEntity<List<UsuariResponseDto>> getUsuaris() {
+        List<UsuariResponseDto> usuaris = usuariService.getUsuaris();
         return ResponseEntity.status(HttpStatus.OK).body(usuaris);
     }
 
     @GetMapping("/usuaris/{actiu}")
-    public ResponseEntity<List<Usuari>> getUsuarisActius(Boolean actiu) {
-        List<Usuari> usuaris = usuariService.getUsuarisActius(actiu);
+    public ResponseEntity<List<UsuariResponseDto>> getUsuarisActius(@PathVariable boolean actiu) {
+        List<UsuariResponseDto> usuaris = usuariService.getUsuarisActius(actiu);
         return ResponseEntity.status(HttpStatus.OK).body(usuaris);
     }
 
     @PostMapping("/usuaris")
-    public ResponseEntity<Usuari> createUsuari(@RequestBody UsuariRequestDTO usuari) {
-        Usuari createdUsuari = usuariService.createUsuari(usuari);
-        if (createdUsuari == null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+    public ResponseEntity<UsuariResponseDto> createUsuari(@Valid @RequestBody UsuariTokenDto usuari) {
+        UsuariResponseDto createdUsuari = usuariService.createUsuari(usuari);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUsuari);
     }
 
     @PutMapping("/usuaris/{id}")
-    public ResponseEntity<Usuari> updateUsuari(@PathVariable Long id, @RequestBody UsuariRequestDTO usuariRequestDTO) {
-        Usuari updatedUsuari = usuariService.updateUsuari(id, usuariRequestDTO);
-        if (updatedUsuari == null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+    public ResponseEntity<UsuariResponseDto> updateUsuari(@PathVariable Long id, @Valid @RequestBody UsuariTokenDto usuariRequestDTO) {
+        UsuariResponseDto updatedUsuari = usuariService.updateUsuari(id, usuariRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).body(updatedUsuari);
     }
 
     @DeleteMapping("/usuaris/{id}")
     public ResponseEntity<Void> deleteUsuari(@PathVariable Long id) {
-        boolean deleted = usuariService.deleteUsuari(id);
-        if (!deleted) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        usuariService.deleteUsuari(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PostMapping("/token")
-    public ResponseEntity<?> createOrUpdateUsuariFromToken(@RequestHeader("Authorization") String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authorization inválido. Debe empezar por Bearer");
-        }
-
-        String token = authHeader.substring(7).trim();
-        if (token.isBlank()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El token está vacío");
-        }
-
-        Usuari createdOrUpdateUsuari = usuariService.createOrUpdateUsuariFromToken(token);
-        if (createdOrUpdateUsuari == null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al crear o actualizar el usuario");
-        }
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdOrUpdateUsuari);
+    public ResponseEntity<UsuariResponseDto> createOrUpdateUsuariFromToken(@RequestHeader("Authorization") String authHeader) {
+        UsuariResponseDto usuari = usuariService.createOrUpdateUsuariFromToken(authHeader);
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuari);
     }
 }

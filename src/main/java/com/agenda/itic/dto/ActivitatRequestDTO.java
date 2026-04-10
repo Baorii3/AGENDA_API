@@ -3,35 +3,36 @@ package com.agenda.itic.dto;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import com.agenda.itic.model.Activitat.Estat;
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class ActivitatRequestDTO {
 
+    @NotNull(message = "El id de la sala no pot ser null")
     private Long id_sala;
+    @NotBlank(message = "El títol de l'activitat no pot ser buit")
     private String titol;
-    private String resum;
+    @NotBlank(message = "La descripció de l'activitat no pot ser buida")
     private String descripcio;
+    @NotNull(message = "La data de l'activitat no pot ser null")
     private LocalDate data;
+    @NotNull(message = "La hora de inicio de la actividad no puede ser null")
     @JsonFormat(pattern = "HH:mm")
     private LocalTime horaInici;
+    @NotNull(message = "La hora de fin de la actividad no puede ser null")
     @JsonFormat(pattern = "HH:mm")
     private LocalTime horaFi;
-    private Estat estat;
-    private Boolean visible;
 
-        public ActivitatRequestDTO(Long id_sala, String titol, String resum, String descripcio,
-            LocalDate data, LocalTime horaInici, LocalTime horaFi, String estat,
-            Boolean visible) {
+        public ActivitatRequestDTO(Long id_sala, String titol, String descripcio,
+            LocalDate data, LocalTime horaInici, LocalTime horaFi) {
         this.id_sala = id_sala;
         this.titol = titol;
-        this.resum = resum;
         this.descripcio = descripcio;
         this.data = data;
         this.horaInici = horaInici;
         this.horaFi = horaFi;
-        this.estat = Estat.valueOf(estat);
-        this.visible = visible;
     }
 
     public Long getId_sala() {
@@ -48,14 +49,6 @@ public class ActivitatRequestDTO {
 
     public void setTitol(String titol) {
         this.titol = titol;
-    }
-
-    public String getResum() {
-        return resum;
-    }
-
-    public void setResum(String resum) {
-        this.resum = resum;
     }
 
     public String getDescripcio() {
@@ -88,22 +81,6 @@ public class ActivitatRequestDTO {
 
     public void setHoraFi(LocalTime horaFi) {
         this.horaFi = horaFi;
-    }
-
-    public Estat getEstat() {
-        return estat;
-    }
-
-    public void setEstat(Estat estat) {
-        this.estat = estat;
-    }
-
-    public Boolean getVisible() {
-        return visible;
-    }
-
-    public void setVisible(Boolean visible) {
-        this.visible = visible;
     }
 
 }

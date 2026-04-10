@@ -7,17 +7,17 @@ public class DispositiuRequestDTO {
     private String model;
     private String numero_serie;
     private String sala;
-    private Boolean actiu;
+    private boolean actiu;
 
     public String getNom() {
         return nom;
     }
 
-    public Boolean getActiu() {
+    public boolean getActiu() {
         return actiu;
     }
 
-    public void setActiu(Boolean actiu) {
+    public void setActiu(boolean actiu) {
         this.actiu = actiu;
     }
 

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.agenda.itic.dto.UsuariRequestDTO;
 import com.agenda.itic.model.Usuari;
 import com.agenda.itic.service.CorreoPermitidoService;
 import com.agenda.itic.service.UsuariService;

@@ -2,21 +2,25 @@ package com.agenda.itic.dto;
 
 import com.agenda.itic.model.Sala.PisoSala;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class SalaRequest {
 
+    @NotBlank(message = "El nom de la sala no pot estar buit")
     private String nom;
+
+    @NotNull(message = "La ubicació de la sala no pot ser null")
     private PisoSala ubicacio;
     private String descripcio;
-    private Boolean activa;
 
     public SalaRequest() {
     }
 
-    public SalaRequest(String nom, PisoSala ubicacio, String descripcio, Boolean activa) {
+    public SalaRequest(String nom, PisoSala ubicacio, String descripcio) {
         this.nom = nom;
         this.ubicacio = ubicacio;
         this.descripcio = descripcio;
-        this.activa = activa;
     }
 
     public String getNom() {
@@ -43,11 +47,4 @@ public class SalaRequest {
         this.descripcio = descripcio;
     }
 
-    public Boolean getActiva() {
-        return activa;
-    }
-
-    public void setActiva(Boolean activa) {
-        this.activa = activa;
-    }
 }

@@ -8,6 +8,8 @@ import com.agenda.itic.dto.ActivitatResponseDTO;
 import com.agenda.itic.model.Activitat;
 import com.agenda.itic.service.ActivitatService;
 
+import jakarta.validation.Valid;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,17 +44,14 @@ public class ActivitatController {
     }
 
     @PostMapping("/activitat")
-    public ResponseEntity<ActivitatResponseDTO> createActivitat(@RequestBody ActivitatRequestDTO activitatRequestDTO) {
+    public ResponseEntity<ActivitatResponseDTO> createActivitat(@Valid @RequestBody ActivitatRequestDTO activitatRequestDTO) {
         ActivitatResponseDTO response = activitatService.createActivitat(activitatRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/activitat/{id}")
     public ResponseEntity<Void> deleteActivitat(@PathVariable Long id) {
-        boolean deleted = activitatService.deleteActivitat(id);
-        if (!deleted) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        activitatService.deleteActivitat(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

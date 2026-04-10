@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.agenda.itic.dto.SalaRequest;
+import com.agenda.itic.dto.SalaResponseDTO;
+import com.agenda.itic.exception.ResourceNotFoundException;
 import com.agenda.itic.model.Sala;
 import com.agenda.itic.repository.SalaRepository;
 
@@ -15,55 +17,40 @@ public class SalaService {
     @Autowired
     SalaRepository salaRepository;
 
-    public List<Sala> getAllSalas() {
-        return salaRepository.findAll();
+    private SalaResponseDTO toDto(Sala sala) {
+        return new SalaResponseDTO(
+                sala.getId(),
+                sala.getNom(),
+                sala.getUbicacio().name(),
+                sala.getDescripcio(),
+                sala.isActiva(),
+                sala.getColorHex());
     }
 
-    public Sala createSala(SalaRequest salaRequest) {
-        if (salaRequest == null) {
-            return null;
-        }
-        try {
-            Sala sala = new Sala();
-            sala.setNom(salaRequest.getNom());
-            sala.setUbicacio(salaRequest.getUbicacio());
-            sala.setDescripcio(salaRequest.getDescripcio());
-            sala.setActiva(salaRequest.getActiva());
-            return salaRepository.save(sala);
-        } catch (Exception e) {
-            return null;
-        }
+    public List<SalaResponseDTO> getAllSalas() {
+        return salaRepository.findAll().stream().map(sala -> toDto(sala)).toList();
     }
 
-    public Sala updateSala(Long id, SalaRequest salaRequest) {
-        if (salaRequest == null) {
-            return null;
-        }
-        try {
-            Sala sala = salaRepository.findById(id).orElse(null);
-            if (sala != null) {
-                sala.setNom(salaRequest.getNom());
-                sala.setUbicacio(salaRequest.getUbicacio());
-                sala.setDescripcio(salaRequest.getDescripcio());
-                sala.setActiva(salaRequest.getActiva());
-                return salaRepository.save(sala);
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            return null;
-        }
+    public SalaResponseDTO createSala(SalaRequest salaRequest) {
+        Sala sala = new Sala();
+        sala.setNom(salaRequest.getNom());
+        sala.setUbicacio(salaRequest.getUbicacio());
+        sala.setDescripcio(salaRequest.getDescripcio());
+        return toDto(salaRepository.save(sala));
     }
 
-    public boolean deleteSala(Long id) {
-        if (!salaRepository.existsById(id)) {
-            return false;
-        }
-        try {
-            salaRepository.deleteById(id);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+    public SalaResponseDTO updateSala(Long id, SalaRequest salaRequest) {
+        Sala sala = salaRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Sala no trobada"));
+        sala.setNom(salaRequest.getNom());
+        sala.setUbicacio(salaRequest.getUbicacio());
+        sala.setDescripcio(salaRequest.getDescripcio());
+        return toDto(salaRepository.save(sala));
     }
+
+    public void deleteSala(Long id) {
+    Sala sala = salaRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Sala no trobada con id: " + id));
+    salaRepository.delete(sala);
+}
 }

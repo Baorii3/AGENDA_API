@@ -36,27 +36,18 @@ public class DispositiuController {
     @PostMapping("/dispositius")
     public ResponseEntity<List<Dispositiu>> postMethodName(@RequestBody DispositiuRequestDTO dispositiu) {
         Dispositiu entity = dispositiuService.createDispositiu(dispositiu);
-        if (entity == null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
         return ResponseEntity.status(HttpStatus.CREATED).body(List.of(entity));
     }
 
     @PutMapping("/dispositius/{id}")
     public ResponseEntity<Dispositiu> putMethodName(@PathVariable Long id, @RequestBody DispositiuRequestDTO entity) {
         Dispositiu updatedEntity = dispositiuService.updateDispositiu(id, entity);
-        if (updatedEntity == null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
         return ResponseEntity.status(HttpStatus.OK).body(updatedEntity);
     }
 
     @DeleteMapping("/dispositius/{id}")
     public ResponseEntity<Void> deleteDispositiu(@PathVariable Long id) {
-        boolean deleted = dispositiuService.deleteDispositiu(id);
-        if (!deleted) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        dispositiuService.deleteDispositiu(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

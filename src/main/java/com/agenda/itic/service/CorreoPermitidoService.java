@@ -2,9 +2,15 @@ package com.agenda.itic.service;
 
 import java.util.List;
 import java.util.Locale;
+
+import org.checkerframework.checker.units.qual.t;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.agenda.itic.dto.CorreoPermitidoRequestDto;
+import com.agenda.itic.dto.CorreoPermitidoResponseDto;
+import com.agenda.itic.exception.BadRequestException;
+import com.agenda.itic.exception.ResourceNotFoundException;
 import com.agenda.itic.model.CorreoPermitido;
 import com.agenda.itic.repository.CorreoPermitidoRepository;
 
@@ -14,40 +20,45 @@ public class CorreoPermitidoService {
     @Autowired
     CorreoPermitidoRepository correopermitidorepository;
 
-    public List<CorreoPermitido> getAllCorreosPermitidos() {
-        return correopermitidorepository.findAll();
+    private CorreoPermitidoResponseDto toDTO(CorreoPermitido correoPermitido) {
+        return new CorreoPermitidoResponseDto(correoPermitido.getId(), correoPermitido.getCorreo());
     }
 
-    public CorreoPermitido getCorreoPermitido(String email) {
-        String normalizedEmail = normalizeEmail(email);
+    public List<CorreoPermitidoResponseDto> getAllCorreosPermitidos() {
+        return correopermitidorepository.findAll().stream()
+                .map(correoPermitido -> toDTO(correoPermitido))
+                .toList();
+    }
+
+    public CorreoPermitidoResponseDto getCorreoPermitido(String correoPermitido) {
+        String normalizedEmail = normalizeEmail(correoPermitido);
         if (normalizedEmail == null) {
-            return null;
+            throw new BadRequestException("Correo inválido");
         }
-        return correopermitidorepository.findByCorreoIgnoreCase(normalizedEmail);
+        return toDTO(correopermitidorepository.findByCorreoIgnoreCase(normalizedEmail));
     }
 
 
-    public CorreoPermitido createCorreoPermitido(String correoPermitidoStr) {
-        String normalizedEmail = normalizeEmail(correoPermitidoStr);
+    public CorreoPermitidoResponseDto createCorreoPermitido(CorreoPermitidoRequestDto correoPermitido) {
+        String normalizedEmail = normalizeEmail(correoPermitido.getCorreo());
         if (normalizedEmail == null) {
-            throw new RuntimeException("Correo inválido");
+            throw new BadRequestException("Correo inválido");
         }
 
         if (correopermitidorepository.findByCorreoIgnoreCase(normalizedEmail) != null) {
-            throw new RuntimeException("Correo ya registrado");
+            throw new BadRequestException("Correo ya registrado");
         }
-        try {
-            return correopermitidorepository.save(new CorreoPermitido(normalizedEmail));
-        } catch (Exception e) {
-            throw new RuntimeException("Error creando un correo permitido", e);
-        }
+        return toDTO(correopermitidorepository.save(new CorreoPermitido(normalizedEmail)));
+    }
 
+    public void deleteCorreoPermitido(Long id) {
+        CorreoPermitido correoPermitido = correopermitidorepository.findById(id).orElseThrow(
+            () -> new ResourceNotFoundException("Correo no encontrado con id: " + id)
+        );
+        correopermitidorepository.delete(correoPermitido);
     }
 
     private String normalizeEmail(String email) {
-        if (email == null) {
-            return null;
-        }
         String normalized = email.trim().toLowerCase(Locale.ROOT);
         return normalized.isEmpty() ? null : normalized;
     }

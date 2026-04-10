@@ -2,6 +2,8 @@ package com.agenda.itic.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.concurrent.ThreadLocalRandom;
+
 
 @Entity
 public class Sala {
@@ -9,22 +11,57 @@ public class Sala {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_sala;
+
+    @Column(nullable = false, unique = true)
     private String nom;
     @Enumerated(EnumType.STRING)
     private PisoSala ubicacio;
     private String descripcio;
-    private Boolean activa = true;
+    private boolean activa = true;
     private LocalDateTime dataCreacio;
     private LocalDateTime dataModificacio;
+    @Enumerated(EnumType.STRING)
+    private Color color;
+    private String colorHex;
 
     public enum PisoSala {
         P0, P4, P5
+    }
+
+    public enum Color {
+        ROJO("#E53935"),
+        VERDE("#43A047"),
+        AZUL("#1E88E5"),
+        AMARILLO("#FDD835"),
+        NARANJA("#FB8C00"),
+        MORADO("#8E24AA"),
+        CYAN("#00ACC1"),
+        MAGENTA("#D81B60");
+
+        private final String hex;
+
+        Color(String hex) {
+            this.hex = hex;
+        }
+
+        public String getHex() {
+            return hex;
+        }
+
+        public static Color aleatorio() {
+            Color[] colors = values();
+            return colors[ThreadLocalRandom.current().nextInt(colors.length)];
+        }
     }
 
     @PrePersist
     protected void onCreate() {
         dataCreacio = LocalDateTime.now();
         dataModificacio = LocalDateTime.now();
+        if (color == null) {
+            color = Color.aleatorio();
+            colorHex = color.getHex();
+        }
     }
 
     @PreUpdate
@@ -35,12 +72,13 @@ public class Sala {
     public Sala() {
     }
 
-    public Sala(Long id_sala, String nom, PisoSala ubicacio, String descripcio, Boolean activa) {
+    public Sala(Long id_sala, String nom, PisoSala ubicacio, String descripcio, Color color) {
         this.id_sala = id_sala;
         this.nom = nom;
         this.ubicacio = ubicacio;
         this.descripcio = descripcio;
-        this.activa = activa;
+        this.color = color;
+        this.colorHex = color.getHex();
     }
 
     public Long getId() {
@@ -75,11 +113,11 @@ public class Sala {
         this.descripcio = descripcio;
     }
 
-    public Boolean getActiva() {
+    public boolean isActiva() {
         return activa;
     }
 
-    public void setActiva(Boolean activa) {
+    public void setActiva(boolean activa) {
         this.activa = activa;
     }
 
@@ -97,5 +135,18 @@ public class Sala {
 
     public void setDataModificacio(LocalDateTime dataModificacio) {
         this.dataModificacio = dataModificacio;
+    }
+
+    public Color getColor() {
+        return color;
+    }   
+
+    public void setColor(Color color) {
+        this.color = color;
+        this.colorHex = color.getHex();
+    }
+
+    public String getColorHex() {
+        return colorHex;
     }
 }

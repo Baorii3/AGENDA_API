@@ -4,20 +4,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
+import com.agenda.itic.dto.UsuariResponseDto;
 import com.agenda.itic.dto.UsuariTokenDto;
+import com.agenda.itic.exception.BadRequestException;
+import com.agenda.itic.exception.ResourceNotFoundException;
 import com.agenda.itic.model.Usuari;
 import com.agenda.itic.model.Usuari.Rol;
 import com.agenda.itic.repository.UsuariRepository;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class UsuariService {
@@ -28,12 +26,22 @@ public class UsuariService {
     @Autowired
     CorreoPermitidoService correoPermitidoService;
 
-    public List<Usuari> getUsuaris() {
-        return usuariRepository.findAll();
+    private UsuariResponseDto toDTO(Usuari usuari) {
+        return new UsuariResponseDto(
+                usuari.getId(),
+                usuari.getNom(),
+                usuari.getEmail(),
+                usuari.getRol().name(),
+                usuari.getFotoPerfil()
+        );
     }
 
-    public List<Usuari> getUsuarisActius(Boolean actiu) {
-        return usuariRepository.findByActiu(actiu);
+    public List<UsuariResponseDto> getUsuaris() {
+        return usuariRepository.findAll().stream().map(user -> toDTO(user)).collect(java.util.stream.Collectors.toList());
+    }
+
+    public List<UsuariResponseDto> getUsuarisActius(boolean actiu) {
+        return usuariRepository.findByActiu(actiu).stream().map(user -> toDTO(user)).collect(java.util.stream.Collectors.toList());
     }
 
 
@@ -55,7 +63,7 @@ public class UsuariService {
         if (correoPermitidoService.getCorreoPermitido(email) != null) {
             rol = Rol.admin;
         } else if (!email.contains("@iticbcn.cat")) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email no válido");
+            throw new BadRequestException("Email no válido");
         } else if (!email.contains("_")) {
             rol = Rol.professor;
         }
@@ -63,35 +71,23 @@ public class UsuariService {
     }
 
     // ELIMINAR PARA FINAL
-    public Usuari createUsuari(UsuariTokenDto usuariRequestDTO) {
-        if (usuariRequestDTO == null || usuariRequestDTO.getEmail() == null) {
-            return null;
-        }
-        Rol rol = getRol(usuariRequestDTO.getEmail());
-
-        try {
-            Usuari usuari = mapToUsuari(usuariRequestDTO);
-            usuari.setRol(rol);
-            return usuariRepository.save(usuari);
-        } catch (Exception e) {
-            throw e;
-        }
+    public UsuariResponseDto createUsuari(UsuariTokenDto usuariRequestDTO) {
+       Rol rol = getRol(usuariRequestDTO.getEmail());
+        Usuari usuari = mapToUsuari(usuariRequestDTO);
+        usuari.setRol(rol);
+        return toDTO(usuariRepository.save(usuari));
     }
 
     // Crearemos un usuario o no, a traves de un token
-    public Usuari createOrUpdateUsuariFromToken(String token) {
+    public UsuariResponseDto createOrUpdateUsuariFromToken(String token) {
         String email = normalizeEmail(getTokenEmail(token));
-
-        if (email == null || email.isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Token inválido o sin email");
-        }
 
         Optional<Usuari> usuariOptional = usuariRepository.findByEmail(email);
         if (usuariOptional.isPresent()) {
-            return usuariOptional.get();
+            return toDTO(usuariOptional.get());
         } else {
             if (correoPermitidoService.getCorreoPermitido(email) == null) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Correo no permitido en la lista blanca");
+                throw new BadRequestException("Correo no permitido en la lista blanca");
             }
         }
 
@@ -103,49 +99,32 @@ public class UsuariService {
         user.setActiu(true);
         user.setProvider(getTokenProvider(token) == null ? "cognito" : getTokenProvider(token));
         user.setProviderId(getTokenProviderId(token));
-        try {
-            user = usuariRepository.save(user);
-        } catch (Exception e) {
-            throw e;
-
-        }
-        return user;
+        user = usuariRepository.save(user);
+        return toDTO(user);
     }
 
-    public Usuari updateUsuari(Long id, UsuariTokenDto usuariRequestDTO) {
-        if (usuariRequestDTO == null) {
-            return null;
+    public UsuariResponseDto updateUsuari(Long id, UsuariTokenDto usuariRequestDTO) {
+        Usuari usuari = usuariRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Usuari no trobat"));
+            
+        usuari.setNom(usuariRequestDTO.getNom());
+        usuari.setEmail(usuariRequestDTO.getEmail());
+        usuari.setRol(getRol(usuariRequestDTO.getEmail()));
+        usuari.setActiu(true);
+        usuari.setProvider(
+                usuariRequestDTO.getProvider() != null ? usuariRequestDTO.getProvider() : usuari.getProvider());
+        usuari.setProviderId(usuariRequestDTO.getProviderId() != null ? usuariRequestDTO.getProviderId()
+                : usuari.getProviderId());
+        if (usuariRequestDTO.getFotoPerfil() != null) {
+            usuari.setFotoPerfil(usuariRequestDTO.getFotoPerfil());
         }
-        try {
-            Usuari usuari = usuariRepository.findById(id).get();
-            usuari.setNom(usuariRequestDTO.getNom());
-            usuari.setEmail(usuariRequestDTO.getEmail());
-            usuari.setRol(getRol(usuariRequestDTO.getEmail()));
-            usuari.setActiu(true);
-            usuari.setProvider(
-                    usuariRequestDTO.getProvider() != null ? usuariRequestDTO.getProvider() : usuari.getProvider());
-            usuari.setProviderId(usuariRequestDTO.getProviderId() != null ? usuariRequestDTO.getProviderId()
-                    : usuari.getProviderId());
-            if (usuariRequestDTO.getFotoPerfil() != null) {
-                usuari.setFotoPerfil(usuariRequestDTO.getFotoPerfil());
-            }
-            return usuariRepository.save(usuari);
-        } catch (Exception e) {
-            throw e;
-        }
+        return toDTO(usuariRepository.save(usuari));
     }
 
-    public boolean deleteUsuari(Long id) {
-        if (!usuariRepository.existsById(id)) {
-            return false;
-        }
-
-        try {
-            usuariRepository.deleteById(id);
-            return true;
-        } catch (Exception e) {
-            throw e;
-        }
+    public void deleteUsuari(Long id) {
+        Usuari usuari = usuariRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuari no trobat"));
+        usuariRepository.delete(usuari);
     }
 
     private String getTokenEmail(String token) {
@@ -153,25 +132,7 @@ public class UsuariService {
             return null;
         }
 
-        try {
-            String normalizedToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token;
-            String[] parts = normalizedToken.split("\\.");
-            if (parts.length != 3) {
-                return null;
-            }
-
-            byte[] decoded = Base64.getUrlDecoder().decode(parts[1]);
-            String payload = new String(decoded, StandardCharsets.UTF_8);
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, Object> claims = objectMapper.readValue(payload, new TypeReference<Map<String, Object>>() {
-            });
-            Object email = claims.get("email");
-
-            return email != null ? email.toString() : null;
-        } catch (Exception e) {
-            return null;
-        }
+        return extractClaim(token, "email");
     }
 
     private String getTokenName(String token) {
@@ -179,25 +140,7 @@ public class UsuariService {
             return null;
         }
 
-        try {
-            String normalizedToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token;
-            String[] parts = normalizedToken.split("\\.");
-            if (parts.length != 3) {
-                return null;
-            }
-
-            byte[] decoded = Base64.getUrlDecoder().decode(parts[1]);
-            String payload = new String(decoded, StandardCharsets.UTF_8);
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, Object> claims = objectMapper.readValue(payload, new TypeReference<Map<String, Object>>() {
-            });
-            Object name = claims.get("name");
-
-            return name != null ? name.toString() : null;
-        } catch (Exception e) {
-            return null;
-        }
+        return extractClaim(token, "name");
     }
 
     private String getTokenPicture(String token) {
@@ -205,25 +148,7 @@ public class UsuariService {
             return null;
         }
 
-        try {
-            String normalizedToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token;
-            String[] parts = normalizedToken.split("\\.");
-            if (parts.length != 3) {
-                return null;
-            }
-
-            byte[] decoded = Base64.getUrlDecoder().decode(parts[1]);
-            String payload = new String(decoded, StandardCharsets.UTF_8);
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, Object> claims = objectMapper.readValue(payload, new TypeReference<Map<String, Object>>() {
-            });
-            Object picture = claims.get("picture");
-
-            return picture != null ? picture.toString() : null;
-        } catch (Exception e) {
-            return null;
-        }
+        return extractClaim(token, "picture");
     }
 
     private String getTokenProviderId(String token) {
@@ -231,45 +156,27 @@ public class UsuariService {
             return null;
         }
 
-        try {
-            String normalizedToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token;
-            String[] parts = normalizedToken.split("\\.");
-            if (parts.length != 3) {
-                return null;
-            }
-
-            byte[] decoded = Base64.getUrlDecoder().decode(parts[1]);
-            String payload = new String(decoded, StandardCharsets.UTF_8);
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, Object> claims = objectMapper.readValue(payload, new TypeReference<Map<String, Object>>() {
-            });
-
-            Object identities = claims.get("identities");
-            if (identities instanceof List<?> identitiesList && !identitiesList.isEmpty()) {
-                Object firstIdentity = identitiesList.get(0);
-                if (firstIdentity instanceof Map<?, ?> identityMap) {
-                    Object userId = identityMap.get("userId");
-                    if (userId != null) {
-                        return userId.toString();
-                    }
-                }
-            }
-
-            Object cognitoUsername = claims.get("cognito:username");
-            if (cognitoUsername != null) {
-                return cognitoUsername.toString();
-            }
-
-            Object sub = claims.get("sub");
-            if (sub != null) {
-                return sub.toString();
-            }
-
-            return null;
-        } catch (Exception e) {
+        String payload = decodeTokenPayload(token);
+        if (payload == null) {
             return null;
         }
+
+        String userId = extractJsonValue(payload, "userId");
+        if (userId != null) {
+            return userId;
+        }
+
+        String cognitoUsername = extractJsonValue(payload, "cognito:username");
+        if (cognitoUsername != null) {
+            return cognitoUsername;
+        }
+
+        String sub = extractJsonValue(payload, "sub");
+        if (sub != null) {
+            return sub;
+        }
+
+        return null;
     }
 
     private String getTokenProvider(String token) {
@@ -277,35 +184,78 @@ public class UsuariService {
             return null;
         }
 
-        try {
-            String normalizedToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token;
-            String[] parts = normalizedToken.split("\\.");
-            if (parts.length != 3) {
-                return null;
-            }
-
-            byte[] decoded = Base64.getUrlDecoder().decode(parts[1]);
-            String payload = new String(decoded, StandardCharsets.UTF_8);
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, Object> claims = objectMapper.readValue(payload, new TypeReference<Map<String, Object>>() {
-            });
-
-            Object identities = claims.get("identities");
-            if (identities instanceof List<?> identitiesList && !identitiesList.isEmpty()) {
-                Object firstIdentity = identitiesList.get(0);
-                if (firstIdentity instanceof Map<?, ?> identityMap) {
-                    Object providerName = identityMap.get("providerName");
-                    if (providerName != null) {
-                        return providerName.toString().toLowerCase(Locale.ROOT);
-                    }
-                }
-            }
-
-            return null;
-        } catch (Exception e) {
+        String payload = decodeTokenPayload(token);
+        if (payload == null) {
             return null;
         }
+
+        String providerName = extractJsonValue(payload, "providerName");
+        if (providerName != null) {
+            return providerName.toLowerCase(Locale.ROOT);
+        }
+
+        return null;
+    }
+
+    private String extractClaim(String token, String claimName) {
+        String payload = decodeTokenPayload(token);
+        if (payload == null) {
+            return null;
+        }
+        return extractJsonValue(payload, claimName);
+    }
+
+    private String decodeTokenPayload(String token) {
+        String normalizedToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token;
+        String[] parts = normalizedToken.split("\\.");
+        if (parts.length != 3) {
+            return null;
+        }
+
+        byte[] decoded = Base64.getUrlDecoder().decode(parts[1]);
+        return new String(decoded, StandardCharsets.UTF_8);
+    }
+
+    private String extractJsonValue(String json, String key) {
+        String quotedKey = "\"" + key + "\"";
+        int keyIndex = json.indexOf(quotedKey);
+        if (keyIndex < 0) {
+            return null;
+        }
+
+        int colonIndex = json.indexOf(':', keyIndex + quotedKey.length());
+        if (colonIndex < 0) {
+            return null;
+        }
+
+        int startIndex = colonIndex + 1;
+        while (startIndex < json.length() && Character.isWhitespace(json.charAt(startIndex))) {
+            startIndex++;
+        }
+
+        if (startIndex >= json.length()) {
+            return null;
+        }
+
+        if (json.charAt(startIndex) == '"') {
+            int endIndex = json.indexOf('"', startIndex + 1);
+            if (endIndex < 0) {
+                return null;
+            }
+            return json.substring(startIndex + 1, endIndex);
+        }
+
+        int endIndex = startIndex;
+        while (endIndex < json.length()) {
+            char current = json.charAt(endIndex);
+            if (current == ',' || current == '}' || current == ']') {
+                break;
+            }
+            endIndex++;
+        }
+
+        String value = json.substring(startIndex, endIndex).trim();
+        return value.isBlank() ? null : value;
     }
 
     private String normalizeEmail(String email) {

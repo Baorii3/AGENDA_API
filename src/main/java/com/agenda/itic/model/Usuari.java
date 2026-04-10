@@ -17,7 +17,7 @@ public class Usuari {
     private String email;
     @Enumerated(EnumType.STRING)
     private Rol rol;
-    private Boolean actiu;
+    private boolean actiu;
     private LocalDateTime dataCreacio;
     private LocalDateTime dataModificacio;
 
@@ -45,7 +45,7 @@ public class Usuari {
     public Usuari() {
     }
 
-    public Usuari(Long id_usuari, String nom, String email, Rol rol, Boolean actiu, String provider,
+    public Usuari(Long id_usuari, String nom, String email, Rol rol, boolean actiu, String provider,
             String providerId) {
         this.id_usuari = id_usuari;
         this.nom = nom;
@@ -88,11 +88,11 @@ public class Usuari {
         this.rol = rol;
     }
 
-    public Boolean getActiu() {
+    public boolean getActiu() {
         return actiu;
     }
 
-    public void setActiu(Boolean actiu) {
+    public void setActiu(boolean actiu) {
         this.actiu = actiu;
     }
 

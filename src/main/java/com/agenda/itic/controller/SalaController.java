@@ -4,8 +4,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.agenda.itic.dto.SalaRequest;
-import com.agenda.itic.model.Sala;
+import com.agenda.itic.dto.SalaResponseDTO;
 import com.agenda.itic.service.SalaService;
+
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -29,38 +31,27 @@ public class SalaController {
     SalaService salaService;
 
     @GetMapping("/salas")
-    public ResponseEntity<List<Sala>> getAllSalas() {
-        List<Sala> salas = salaService.getAllSalas();
+    public ResponseEntity<List<SalaResponseDTO>> getAllSalas() {
+        List<SalaResponseDTO> salas = salaService.getAllSalas();
         return ResponseEntity.status(HttpStatus.OK).body(salas);
     }
 
     @PostMapping("/salas")
-    public ResponseEntity<Sala> postSala(@RequestBody SalaRequest salaRequest) {
-        Sala sala = salaService.createSala(salaRequest);
-        if (sala != null) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(sala);
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+    public ResponseEntity<SalaResponseDTO> postSala(@Valid @RequestBody SalaRequest salaRequest) {
+        SalaResponseDTO sala = salaService.createSala(salaRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(sala);
     }
 
     @PutMapping("/salas/{id}")
-    public ResponseEntity<Sala> putSala(@PathVariable Long id, @RequestBody SalaRequest salaRequest) {
-        Sala salaActualitzada = salaService.updateSala(id, salaRequest);
-        if (salaActualitzada != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(salaActualitzada);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
+    public ResponseEntity<SalaResponseDTO> putSala(@PathVariable Long id, @Valid @RequestBody SalaRequest salaRequest) {
+        SalaResponseDTO salaActualitzada = salaService.updateSala(id, salaRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(salaActualitzada);
+        
     }
 
     @DeleteMapping("/salas/{id}")
     public ResponseEntity<Void> deleteSala(@PathVariable Long id) {
-        boolean eliminat = salaService.deleteSala(id);
-        if (!eliminat) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        salaService.deleteSala(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-
     }
 }

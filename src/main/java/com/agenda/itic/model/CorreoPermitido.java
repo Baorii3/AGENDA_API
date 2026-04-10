@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 public class CorreoPermitido {
@@ -12,6 +13,7 @@ public class CorreoPermitido {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true)
+    @NotBlank(message = "El correo no puede ser vacío")
     private String correo;
 
     public CorreoPermitido() {}
@@ -26,5 +28,12 @@ public class CorreoPermitido {
 
     public void setCorreo(String correo) {
         this.correo = correo;
+    }
+
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
     }
 }
