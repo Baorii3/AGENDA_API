@@ -27,10 +27,6 @@ public class Usuari {
 
     private String fotoPerfil;
 
-    public enum Rol {
-        admin, professor, usuari
-    }
-
     @PrePersist
     protected void onCreate() {
         dataCreacio = LocalDateTime.now();
