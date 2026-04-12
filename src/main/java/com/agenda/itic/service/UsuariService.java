@@ -45,6 +45,10 @@ public class UsuariService {
         return usuariRepository.findByActiu(actiu).stream().map(user -> toDTO(user)).toList();
     }
 
+    public List<UsuariResponseDto> getUsuarisProfes() {
+        return usuariRepository.findByRol(Rol.PROFESSOR).stream().map(user -> toDTO(user)).toList();
+    }
+
 
     // ELIMINAR PARA FINAL
     private Usuari mapToUsuari(UsuariTokenDto usuariRequestDTO) {
