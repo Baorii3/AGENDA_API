@@ -11,9 +11,15 @@ public class Activitat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_activitat;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_sala", nullable = false)
     private Sala sala;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_usuari", nullable = false)
+    private Usuari user;
+
     private String titol;
     private String descripcio;
     private LocalDate data;
@@ -43,6 +49,7 @@ public class Activitat {
         this.sala = sala;
         this.titol = titol;
         this.descripcio = descripcio;
+        this.user = user;
         this.data = data;
         this.horaInici = horaInici;
         this.horaFi = horaFi;
@@ -126,5 +133,13 @@ public class Activitat {
 
     public void setDataModificacio(LocalDateTime dataModificacio) {
         this.dataModificacio = dataModificacio;
+    }
+
+    public Usuari getUser() {
+        return user;
+    }
+
+    public void setUser(Usuari user) {
+        this.user = user;
     }
 }

@@ -7,6 +7,8 @@ public class ActivitatResponseDTO {
     private Long id_activitat;
     private Long id_sala;
     private String nom_sala;
+    private Long id_usuari;
+    private String nom_usuari;
     private String titol;
     private String descripcio;
     private LocalDate data;
@@ -16,11 +18,13 @@ public class ActivitatResponseDTO {
 
 
     
-    public ActivitatResponseDTO(Long id_activitat, Long id_sala, String nom_sala, String titol, String descripcio,
+    public ActivitatResponseDTO(Long id_activitat, Long id_sala, String nom_sala,Long id_usuari, String nom_usuari, String titol, String descripcio,
             LocalDate data, LocalTime horaInici, LocalTime horaFi, boolean activa) {
         this.id_activitat = id_activitat;
         this.id_sala = id_sala;
         this.nom_sala = nom_sala;
+        this.id_usuari = id_usuari;
+        this.nom_usuari = nom_usuari;
         this.titol = titol;
         this.descripcio = descripcio;
         this.data = data;
@@ -49,6 +53,22 @@ public class ActivitatResponseDTO {
 
     public void setId_sala(Long id_sala) {
         this.id_sala = id_sala;
+    }
+
+    public Long getId_usuari() {
+        return id_usuari;
+    }
+
+    public void setId_usuari(Long id_usuari) {
+        this.id_usuari = id_usuari;
+    }
+
+    public String getNom_usuari() {
+        return nom_usuari;
+    }
+
+    public void setNom_usuari(String nom_usuari) {
+        this.nom_usuari = nom_usuari;
     }
 
     public String getTitol() {

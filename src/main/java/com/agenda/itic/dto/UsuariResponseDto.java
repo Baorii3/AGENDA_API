@@ -1,20 +1,24 @@
 package com.agenda.itic.dto;
 
+import java.util.List;
+
 public class UsuariResponseDto {
     private Long id_usuari;
     private String nom;
     private String email;
     private String rol;
+    private List<String> permisos;
     private String picture;
 
     public UsuariResponseDto() {
     }
 
-    public UsuariResponseDto(Long id_usuari, String nom, String email, String rol, String picture) {
+    public UsuariResponseDto(Long id_usuari, String nom, String email, String rol, List<String> permisos, String picture) {
         this.id_usuari = id_usuari;
         this.nom = nom;
         this.email = email;
         this.rol = rol;
+        this.permisos = permisos;
         this.picture = picture;
     }
 
@@ -55,5 +59,13 @@ public class UsuariResponseDto {
     }
     public void setPicture(String picture) {
         this.picture = picture;
+    }
+
+    public List<String> getPermisos() {
+        return permisos;
+    }
+
+    public void setPermisos(List<String> permisos) {
+        this.permisos = permisos;
     }
 }

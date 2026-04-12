@@ -12,6 +12,8 @@ public class ActivitatRequestDTO {
 
     @NotNull(message = "El id de la sala no pot ser null")
     private Long id_sala;
+    @NotNull(message = "El id del usuari no pot ser null")
+    private Long id_usuari;
     @NotBlank(message = "El títol de l'activitat no pot ser buit")
     private String titol;
     @NotBlank(message = "La descripció de l'activitat no pot ser buida")
@@ -25,9 +27,10 @@ public class ActivitatRequestDTO {
     @JsonFormat(pattern = "HH:mm")
     private LocalTime horaFi;
 
-        public ActivitatRequestDTO(Long id_sala, String titol, String descripcio,
+        public ActivitatRequestDTO(Long id_sala, Long id_usuari, String titol, String descripcio,
             LocalDate data, LocalTime horaInici, LocalTime horaFi) {
         this.id_sala = id_sala;
+        this.id_usuari = id_usuari;
         this.titol = titol;
         this.descripcio = descripcio;
         this.data = data;
@@ -83,4 +86,11 @@ public class ActivitatRequestDTO {
         this.horaFi = horaFi;
     }
 
+    public Long getId_usuari() {
+        return id_usuari;
+    }
+
+    public void setId_usuari(Long id_usuari) {
+        this.id_usuari = id_usuari;
+    }
 }

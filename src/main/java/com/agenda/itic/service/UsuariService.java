@@ -13,8 +13,8 @@ import com.agenda.itic.dto.UsuariResponseDto;
 import com.agenda.itic.dto.UsuariTokenDto;
 import com.agenda.itic.exception.BadRequestException;
 import com.agenda.itic.exception.ResourceNotFoundException;
+import com.agenda.itic.model.Rol;
 import com.agenda.itic.model.Usuari;
-import com.agenda.itic.model.Usuari.Rol;
 import com.agenda.itic.repository.UsuariRepository;
 
 @Service
@@ -32,16 +32,17 @@ public class UsuariService {
                 usuari.getNom(),
                 usuari.getEmail(),
                 usuari.getRol().name(),
+                usuari.getRol().getPermisos().stream().toList(),
                 usuari.getFotoPerfil()
         );
     }
 
     public List<UsuariResponseDto> getUsuaris() {
-        return usuariRepository.findAll().stream().map(user -> toDTO(user)).collect(java.util.stream.Collectors.toList());
+        return usuariRepository.findAll().stream().map(user -> toDTO(user)).toList();
     }
 
     public List<UsuariResponseDto> getUsuarisActius(boolean actiu) {
-        return usuariRepository.findByActiu(actiu).stream().map(user -> toDTO(user)).collect(java.util.stream.Collectors.toList());
+        return usuariRepository.findByActiu(actiu).stream().map(user -> toDTO(user)).toList();
     }
 
 
@@ -59,20 +60,28 @@ public class UsuariService {
     }
 
     private Rol getRol(String email) {
-        Rol rol = Rol.usuari;
-        if (correoPermitidoService.getCorreoPermitido(email) != null) {
-            rol = Rol.admin;
-        } else if (!email.contains("@iticbcn.cat")) {
-            throw new BadRequestException("Email no válido");
-        } else if (!email.contains("_")) {
-            rol = Rol.professor;
+        if (!email.contains("@iticbcn.cat")) {
+            throw new BadRequestException("Només s'accepten correus de l'ITIC BCN.");
         }
-        return rol;
-    }
+
+        try {
+            if (correoPermitidoService.getCorreoPermitido(email) != null) {
+                return Rol.ADMIN;
+            }
+        } catch (ResourceNotFoundException e) {
+            // No es necesario manejar esta excepción aquí, ya que simplemente significa que el correo no está en la lista blanca.
+        }
+            
+        if (!email.split("@")[0].contains("_")) {
+            return Rol.PROFESSOR;
+        }
+
+        return Rol.USUARI;
+    }   
 
     // ELIMINAR PARA FINAL
     public UsuariResponseDto createUsuari(UsuariTokenDto usuariRequestDTO) {
-       Rol rol = getRol(usuariRequestDTO.getEmail());
+        Rol rol = getRol(usuariRequestDTO.getEmail());
         Usuari usuari = mapToUsuari(usuariRequestDTO);
         usuari.setRol(rol);
         return toDTO(usuariRepository.save(usuari));

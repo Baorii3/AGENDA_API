@@ -1,6 +1,6 @@
 package com.agenda.itic.dto;
 
-import com.agenda.itic.model.Sala.PisoSala;
+import com.agenda.itic.model.PisoSala;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

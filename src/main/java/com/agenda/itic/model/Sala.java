@@ -2,6 +2,7 @@ package com.agenda.itic.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 
@@ -24,9 +25,8 @@ public class Sala {
     private Color color;
     private String colorHex;
 
-    public enum PisoSala {
-        P0, P4, P5
-    }
+    @OneToMany(mappedBy = "sala", cascade = CascadeType.ALL)
+    private List<Activitat> activitats;
 
     public enum Color {
         ROJO("#E53935"),

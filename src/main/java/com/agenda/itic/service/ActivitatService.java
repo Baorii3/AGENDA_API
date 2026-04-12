@@ -1,5 +1,6 @@
 package com.agenda.itic.service;
 
+import com.agenda.itic.repository.UsuariRepository;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +17,17 @@ import com.agenda.itic.repository.SalaRepository;
 public class ActivitatService {
 
     @Autowired
+    UsuariRepository usuariRepository;
+
+    @Autowired
     ActivitatRepository activitatRepository;
 
     @Autowired
     SalaRepository salaRepository;
+
+
+    ActivitatService(UsuariRepository usuariRepository) {
+    }
 
 
     public List<ActivitatResponseDTO> getAllActivitats() {
@@ -34,6 +42,8 @@ public class ActivitatService {
                 a.getId_activitat(),
                 a.getSala().getId(),
                 a.getSala().getNom(),
+                a.getUser().getId(),
+                a.getUser().getNom(),
                 a.getTitol(),
                 a.getDescripcio(),
                 a.getData(),
@@ -50,6 +60,7 @@ public class ActivitatService {
         activitat.setData(activitatRequestDTO.getData());
         activitat.setHoraInici(activitatRequestDTO.getHoraInici());
         activitat.setHoraFi(activitatRequestDTO.getHoraFi());
+        activitat.setUser(usuariRepository.findById(activitatRequestDTO.getId_usuari()).orElseThrow(() -> new ResourceNotFoundException("Usuari no trobat")));
         return activitat;
     }
 
@@ -62,6 +73,22 @@ public class ActivitatService {
         if (!salaRepository.existsById(activitatRequestDTO.getId_sala())) {
             throw new ResourceNotFoundException("No se puede crear la actividad: La sala con ID " 
             + activitatRequestDTO.getId_sala() + " no existe.");
+        }
+        if (!usuariRepository.existsById(activitatRequestDTO.getId_usuari())) {
+            throw new ResourceNotFoundException("No se puede crear la actividad: El usuario con ID " 
+            + activitatRequestDTO.getId_usuari() + " no existe.");
+        }
+        if (activitatRequestDTO.getHoraInici().isAfter(activitatRequestDTO.getHoraFi())) {
+            throw new IllegalArgumentException("La hora de inicio no puede ser posterior a la hora de fin.");
+        }
+        if (activitatRequestDTO.getHoraInici().equals(activitatRequestDTO.getHoraFi())) {
+            throw new IllegalArgumentException("La hora de inicio no puede ser igual a la hora de fin.");
+        }
+        if (activitatRequestDTO.getData().isBefore(java.time.LocalDate.now())) {
+            throw new IllegalArgumentException("La fecha de la actividad no puede ser anterior a la fecha actual.");
+        }
+        if (activitatRequestDTO.getData().isEqual(java.time.LocalDate.now()) && activitatRequestDTO.getHoraInici().isBefore(java.time.LocalTime.now())) {
+            throw new IllegalArgumentException("La hora de inicio de la actividad no puede ser anterior a la hora actual.");
         }
         Activitat activitat = toModel(activitatRequestDTO);
         activitat = activitatRepository.save(activitat);

@@ -2,6 +2,7 @@ package com.agenda.itic.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 public class Usuari {
@@ -20,6 +21,10 @@ public class Usuari {
     private boolean actiu;
     private LocalDateTime dataCreacio;
     private LocalDateTime dataModificacio;
+
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Activitat> activitats;
 
     // AUTH
     private String provider;

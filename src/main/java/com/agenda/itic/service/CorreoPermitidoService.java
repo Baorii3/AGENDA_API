@@ -35,7 +35,11 @@ public class CorreoPermitidoService {
         if (normalizedEmail == null) {
             throw new BadRequestException("Correo inválido");
         }
-        return toDTO(correopermitidorepository.findByCorreoIgnoreCase(normalizedEmail));
+        CorreoPermitido correoPermitido2 = correopermitidorepository.findByCorreoIgnoreCase(normalizedEmail);
+        if (correoPermitido2 == null) {
+            throw new ResourceNotFoundException("Correo no encontrado: " + correoPermitido);
+        }
+        return toDTO(correoPermitido2);
     }
 
 
