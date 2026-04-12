@@ -98,10 +98,6 @@ public class UsuariService {
         Optional<Usuari> usuariOptional = usuariRepository.findByEmail(email);
         if (usuariOptional.isPresent()) {
             return toDTO(usuariOptional.get());
-        } else {
-            if (correoPermitidoService.getCorreoPermitido(email) == null) {
-                throw new BadRequestException("Correo no permitido en la lista blanca");
-            }
         }
 
         Usuari user = new Usuari();
