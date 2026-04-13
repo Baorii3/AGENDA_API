@@ -43,7 +43,7 @@ public class ActivitatController {
         return ResponseEntity.status(HttpStatus.OK).body(activitatService.getActivitatById(id));
     }
 
-    @GetMapping("/activitats/agenda/{idUsuari}")
+    @GetMapping("/activitats/{idUsuari}")
     public ResponseEntity<List<ActivitatResponseDTO>> getActivitatsByUsuari(@PathVariable Long idUsuari) {
         return ResponseEntity.status(HttpStatus.OK).body(activitatService.getActivitatsByUsuari(idUsuari));
     }
