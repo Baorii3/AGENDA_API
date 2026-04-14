@@ -69,6 +69,13 @@ public class ActivitatService {
                 .orElseThrow(() -> new ResourceNotFoundException("Activitat no trobada")));
     }
 
+    public List<ActivitatResponseDTO> getActivitatsByUsuari(Long idUsuari) {
+        return activitatRepository.findByUserId(idUsuari)
+                .stream()
+                .map(act -> toDTO(act))
+                .toList();
+    }
+
     public ActivitatResponseDTO createActivitat(ActivitatRequestDTO activitatRequestDTO) {
         if (!salaRepository.existsById(activitatRequestDTO.getId_sala())) {
             throw new ResourceNotFoundException("No se puede crear la actividad: La sala con ID " 

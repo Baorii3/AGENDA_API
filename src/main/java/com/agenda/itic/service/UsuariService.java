@@ -45,6 +45,10 @@ public class UsuariService {
         return usuariRepository.findByActiu(actiu).stream().map(user -> toDTO(user)).toList();
     }
 
+    public List<UsuariResponseDto> getUsuarisProfes() {
+        return usuariRepository.findByRol(Rol.PROFESSOR).stream().map(user -> toDTO(user)).toList();
+    }
+
 
     // ELIMINAR PARA FINAL
     private Usuari mapToUsuari(UsuariTokenDto usuariRequestDTO) {
@@ -94,10 +98,6 @@ public class UsuariService {
         Optional<Usuari> usuariOptional = usuariRepository.findByEmail(email);
         if (usuariOptional.isPresent()) {
             return toDTO(usuariOptional.get());
-        } else {
-            if (correoPermitidoService.getCorreoPermitido(email) == null) {
-                throw new BadRequestException("Correo no permitido en la lista blanca");
-            }
         }
 
         Usuari user = new Usuari();
