@@ -22,6 +22,8 @@ import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/usuaris")
@@ -66,4 +68,10 @@ public class UsuariController {
         UsuariResponseDto usuari = usuariService.createOrUpdateUsuariFromToken(authHeader);
         return ResponseEntity.status(HttpStatus.CREATED).body(usuari);
     }
+    
+    @GetMapping("/usuaris/profes")
+    public ResponseEntity<List<UsuariResponseDto>> getUsuariProfes() {
+        return ResponseEntity.ok(usuariService.getUsuarisProfes());
+    }
+    
 }

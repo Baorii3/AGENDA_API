@@ -3,8 +3,8 @@ package com.agenda.itic.model;
 import java.util.Set;
 
 public enum Rol {
-        ADMIN(Set.of("SALA_CREATE", "SALA_UPDATE", "SALA_DELETE", "USUARI_CREATE", "USUARI_UPDATE", "USUARI_DELETE")),
-        PROFESSOR(Set.of("SALA_CREATE", "SALA_UPDATE", "SALA_DELETE")),
+        ADMIN(Set.of("SALA_CREATE", "SALA_UPDATE", "SALA_DELETE", "USUARI_CREATE", "USUARI_UPDATE", "USUARI_DELETE", "ACTIVITAT_CREATE", "ACTIVITAT_UPDATE", "ACTIVITAT_DELETE")),
+        PROFESSOR(Set.of()),
         USUARI(Set.of());
         
         private final Set<String> permisos;
