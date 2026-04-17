@@ -1,8 +1,10 @@
 package com.agenda.itic.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import com.agenda.itic.dto.DispositiuRequestDTO;
@@ -27,12 +29,11 @@ public class DispositiuService {
     public Dispositiu mapToDispositiu(DispositiuRequestDTO dispositiuDTO) {
         Dispositiu dispositiu = new Dispositiu();
         dispositiu.setNom(dispositiuDTO.getNom());
-        dispositiu.setTipus(dispositiuDTO.getTipus());
-        dispositiu.setMarca(dispositiuDTO.getMarca());
-        dispositiu.setModel(dispositiuDTO.getModel());
-        dispositiu.setNumero_serie(dispositiuDTO.getNumero_serie());
-        dispositiu.setSala(dispositiuDTO.getSala());
+        dispositiu.setIp(dispositiuDTO.getIp());
+        dispositiu.setMac(dispositiuDTO.getMac());
+        dispositiu.setTipus(dispositiuDTO.getTipus());        
         dispositiu.setActiu(dispositiuDTO.getActiu());
+        dispositiu.setHeartbeat(LocalDateTime.now());
         return dispositiu;
     }
 
@@ -62,10 +63,6 @@ public class DispositiuService {
     }
 
     public void deleteDispositiu(Long id) {
-        if (usuariRepository.existsById(id)) {
-            throw new ResourceNotFoundException("No es pot eliminar el dispositiu perquè està associat a un usuari");
-        }
-        
         dispositiuRepository.deleteById(id);
     }
 }

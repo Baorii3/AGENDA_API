@@ -9,44 +9,30 @@ public class Dispositiu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_dispositiu;
-    private String nom;
     private String ip;
     private String mac;
-    private String model;
+    private String nom;
     private String tipus;
-    private String marca;
-    private String numero_serie;
-    private String sala;
     private boolean actiu;
     private LocalDateTime dataCreacio;
-    private LocalDateTime dataModificacio;
+    private LocalDateTime heartbeat;
 
     @PrePersist
     protected void onCreate() {
         dataCreacio = LocalDateTime.now();
-        dataModificacio = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        dataModificacio = LocalDateTime.now();
     }
 
     public Dispositiu() {
     }
 
-    public Dispositiu(Long id_dispositiu, String nom, String ip, String mac, String model, String tipus,
-            String marca, String numero_serie, String sala, boolean actiu) {
+    public Dispositiu(Long id_dispositiu, String nom, String ip, String mac, String tipus, boolean actiu, LocalDateTime heartbeat) {
         this.id_dispositiu = id_dispositiu;
         this.nom = nom;
         this.ip = ip;
         this.mac = mac;
-        this.model = model;
         this.tipus = tipus;
-        this.marca = marca;
-        this.numero_serie = numero_serie;
-        this.sala = sala;
         this.actiu = actiu;
+        this.heartbeat = heartbeat;
     }
 
     public String getTipus() {
@@ -55,30 +41,6 @@ public class Dispositiu {
 
     public void setTipus(String tipus) {
         this.tipus = tipus;
-    }
-
-    public String getMarca() {
-        return marca;
-    }
-
-    public void setMarca(String marca) {
-        this.marca = marca;
-    }
-
-    public String getNumero_serie() {
-        return numero_serie;
-    }
-
-    public void setNumero_serie(String numero_serie) {
-        this.numero_serie = numero_serie;
-    }
-
-    public String getSala() {
-        return sala;
-    }
-
-    public void setSala(String sala) {
-        this.sala = sala;
     }
 
     public Long getId_dispositiu() {
@@ -113,14 +75,6 @@ public class Dispositiu {
         this.mac = mac;
     }
 
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
-    }
-
     public boolean getActiu() {
         return actiu;
     }
@@ -137,11 +91,12 @@ public class Dispositiu {
         this.dataCreacio = dataCreacio;
     }
 
-    public LocalDateTime getDataModificacio() {
-        return dataModificacio;
+    public LocalDateTime getHeartbeat() {
+        return heartbeat;
     }
 
-    public void setDataModificacio(LocalDateTime dataModificacio) {
-        this.dataModificacio = dataModificacio;
+    public void setHeartbeat(LocalDateTime heartbeat) {
+        this.heartbeat = heartbeat;
     }
+
 }

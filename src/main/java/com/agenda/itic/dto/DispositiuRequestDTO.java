@@ -1,12 +1,10 @@
 package com.agenda.itic.dto;
 
 public class DispositiuRequestDTO {
+    private String mac;
+    private String ip;
     private String nom;
     private String tipus;
-    private String marca;
-    private String model;
-    private String numero_serie;
-    private String sala;
     private boolean actiu;
 
     public String getNom() {
@@ -16,6 +14,7 @@ public class DispositiuRequestDTO {
     public boolean getActiu() {
         return actiu;
     }
+
 
     public void setActiu(boolean actiu) {
         this.actiu = actiu;
@@ -33,35 +32,19 @@ public class DispositiuRequestDTO {
         this.tipus = tipus;
     }
 
-    public String getMarca() {
-        return marca;
+    public String getMac() {
+        return mac;
     }
 
-    public void setMarca(String marca) {
-        this.marca = marca;
+    public void setMac(String mac) {
+        this.mac = mac;
     }
 
-    public String getModel() {
-        return model;
+    public String getIp() {
+        return ip;
     }
 
-    public void setModel(String model) {
-        this.model = model;
-    }
-
-    public String getNumero_serie() {
-        return numero_serie;
-    }
-
-    public void setNumero_serie(String numero_serie) {
-        this.numero_serie = numero_serie;
-    }
-
-    public String getSala() {
-        return sala;
-    }
-
-    public void setSala(String sala) {
-        this.sala = sala;
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 }
