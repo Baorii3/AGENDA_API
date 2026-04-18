@@ -4,27 +4,21 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import com.agenda.itic.dto.DispositiuRequestDTO;
+import com.agenda.itic.dto.DispositiuResponseDTO;
 import com.agenda.itic.exception.BadRequestException;
 import com.agenda.itic.exception.ResourceNotFoundException;
 import com.agenda.itic.model.Dispositiu;
 import com.agenda.itic.repository.DispositiuRepository;
-import com.agenda.itic.repository.UsuariRepository;
 
 @Service
 public class DispositiuService {
 
-    private final UsuariRepository usuariRepository;
 
     @Autowired
     DispositiuRepository dispositiuRepository;
-
-    DispositiuService(UsuariRepository usuariRepository) {
-        this.usuariRepository = usuariRepository;
-    }
 
     public Dispositiu mapToDispositiu(DispositiuRequestDTO dispositiuDTO) {
         Dispositiu dispositiu = new Dispositiu();
@@ -35,6 +29,18 @@ public class DispositiuService {
         dispositiu.setActiu(true);
         dispositiu.setHeartbeat(LocalDateTime.now());
         return dispositiu;
+    }
+
+    public DispositiuResponseDTO mapToResponseDTO(Dispositiu dispositiu) {
+        return new DispositiuResponseDTO(
+            dispositiu.getId_dispositiu(),
+            dispositiu.getNom(),
+            dispositiu.getMac(),
+            dispositiu.getIp(),
+            dispositiu.isActiu(),
+            dispositiu.getDataCreacio(),
+            dispositiu.getHeartbeat()
+        );
     }
 
     public List<Dispositiu> getDispositius() {
