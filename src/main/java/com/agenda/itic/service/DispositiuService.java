@@ -47,9 +47,25 @@ public class DispositiuService {
         return dispositiuRepository.findAll();
     }
 
+    public Dispositiu getDispositiuByMac(String mac) {
+        return dispositiuRepository.findByMac(mac).orElseThrow(
+            () -> new ResourceNotFoundException("Dispositiu no trobat amb mac: " + mac)
+        );
+    }
+
     public Dispositiu createDispositiu(DispositiuRequestDTO dispositiu) {
         if (dispositiu == null) {
             throw new BadRequestException("DispositiuRequestDTO no pot ser null");
+        }
+        if (dispositiu.getMac() == null || dispositiu.getMac().isEmpty()) {
+            throw new BadRequestException("El camp 'mac' és obligatori");
+        }
+        if (dispositiu.getIp() == null || dispositiu.getIp().isEmpty()) {
+            throw new BadRequestException("El camp 'ip' és obligatori");
+        }
+
+        if (dispositiuRepository.findByMac(dispositiu.getMac()).isPresent()) {
+            return dispositiuRepository.findByMac(dispositiu.getMac()).get();
         }
         return dispositiuRepository.save(mapToDispositiu(dispositiu));
         
@@ -69,6 +85,10 @@ public class DispositiuService {
     }
 
     public void deleteDispositiu(Long id) {
-        dispositiuRepository.deleteById(id);
+        Dispositiu dispositiu = dispositiuRepository.findById(id).orElseThrow(
+            () -> new ResourceNotFoundException("Dispositiu no trobat amb id: " + id)
+        );
+
+        dispositiuRepository.delete(dispositiu);
     }
 }

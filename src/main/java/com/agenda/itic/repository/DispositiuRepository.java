@@ -6,4 +6,5 @@ import com.agenda.itic.model.Dispositiu;
 
 @Repository
 public interface DispositiuRepository extends JpaRepository<Dispositiu, Long> {
+    java.util.Optional<Dispositiu> findByMac(String mac);
 }
