@@ -32,7 +32,7 @@ public class DispositiuService {
         dispositiu.setIp(dispositiuDTO.getIp());
         dispositiu.setMac(dispositiuDTO.getMac());
         dispositiu.setTipus(dispositiuDTO.getTipus());        
-        dispositiu.setActiu(dispositiuDTO.getActiu());
+        dispositiu.setActiu(true);
         dispositiu.setHeartbeat(LocalDateTime.now());
         return dispositiu;
     }
