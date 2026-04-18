@@ -75,7 +75,7 @@ public class Dispositiu {
         this.mac = mac;
     }
 
-    public boolean getActiu() {
+    public boolean isActiu() {
         return actiu;
     }
 
