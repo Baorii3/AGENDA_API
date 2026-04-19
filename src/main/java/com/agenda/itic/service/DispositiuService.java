@@ -66,7 +66,7 @@ public class DispositiuService {
         }
 
         if (dispositiuRepository.findByMac(dispositiu.getMac()).isPresent()) {
-            return dispositiuRepository.findByMac(dispositiu.getMac()).get();
+            return setDispositiuHeartbeat(dispositiu.getMac());
         }
         return dispositiuRepository.save(mapToDispositiu(dispositiu));
         
