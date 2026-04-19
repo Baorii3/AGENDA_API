@@ -38,6 +38,12 @@ public class DispositiuController {
         Dispositiu entity = dispositiuService.createDispositiu(dispositiu);
         return ResponseEntity.status(HttpStatus.CREATED).body(List.of(entity));
     }
+    
+    @PutMapping("/{mac}/heartbeat")
+    public ResponseEntity<Dispositiu> updateHeartbeat(@PathVariable String mac) {
+        Dispositiu updatedEntity = dispositiuService.setDispositiuHeartbeat(mac);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedEntity);
+    }
 
     @PutMapping("/dispositius/{id}")
     public ResponseEntity<Dispositiu> putMethodName(@PathVariable Long id, @RequestBody DispositiuRequestDTO entity) {

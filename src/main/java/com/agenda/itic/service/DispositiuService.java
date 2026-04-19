@@ -77,6 +77,7 @@ public class DispositiuService {
             () -> new ResourceNotFoundException("Dispositiu no trobat amb mac: " + mac)
         );
         dispositiu.setHeartbeat(LocalDateTime.now());
+        dispositiu.setActiu(true);
         return dispositiuRepository.save(dispositiu);
     }
 
