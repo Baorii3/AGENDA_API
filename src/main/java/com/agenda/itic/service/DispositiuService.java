@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.agenda.itic.dto.DispositiuRequestDTO;
@@ -69,6 +70,27 @@ public class DispositiuService {
         }
         return dispositiuRepository.save(mapToDispositiu(dispositiu));
         
+    }
+
+    public Dispositiu setDispositiuHeartbeat(String mac) {
+        Dispositiu dispositiu = dispositiuRepository.findByMac(mac).orElseThrow(
+            () -> new ResourceNotFoundException("Dispositiu no trobat amb mac: " + mac)
+        );
+        dispositiu.setHeartbeat(LocalDateTime.now());
+        return dispositiuRepository.save(dispositiu);
+    }
+
+    @Scheduled(fixedRate = 60000)
+    public void comprovarDispositiusInactius() {
+        LocalDateTime faCincMinuts = LocalDateTime.now().minusMinutes(5);
+        
+        List<Dispositiu> dispositiusDesconnectats = dispositiuRepository.findByActiuTrueAndHeartbeatBefore(faCincMinuts);
+        
+        for (Dispositiu d : dispositiusDesconnectats) {
+            d.setActiu(false);
+            dispositiuRepository.save(d);
+            System.out.println("S'ha desconnectat el dispositiu: " + d.getMac());
+        }
     }
 
     public Dispositiu updateDispositiu(Long id, DispositiuRequestDTO dispositiuDTO) {
