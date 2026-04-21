@@ -67,17 +67,17 @@ public class DispositiuService {
         }
 
         if (dispositiuRepository.findByMac(dispositiu.getMac()).isPresent()) {
-            return setDispositiuHeartbeat(dispositiu.getMac());
+            return setDispositiuHeartbeat(dispositiu.getMac(), dispositiu.getIp());
         }
         return dispositiuRepository.save(mapToDispositiu(dispositiu));
         
     }
 
-    public Dispositiu setDispositiuHeartbeat(String mac) {
+    public Dispositiu setDispositiuHeartbeat(String mac, String ip) {
         Dispositiu dispositiu = dispositiuRepository.findByMac(mac).orElseThrow(
             () -> new ResourceNotFoundException("Dispositiu no trobat amb mac: " + mac)
         );
-        dispositiu.setIp(dispositiu.getIp());
+        dispositiu.setIp(ip);
         dispositiu.setHeartbeat(LocalDateTime.now());
         dispositiu.setActiu(true);
         return dispositiuRepository.save(dispositiu);
