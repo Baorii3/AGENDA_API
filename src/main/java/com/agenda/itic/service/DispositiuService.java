@@ -1,5 +1,6 @@
 package com.agenda.itic.service;
 
+import com.agenda.itic.repository.ActivitatRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -51,6 +52,10 @@ public class DispositiuService {
         if (dispositiu == null) {
             throw new BadRequestException("DispositiuRequestDTO no pot ser null");
         }
+        if (dispositiuRepository.findByMac(dispositiu.getMac()) != null) {
+            
+        }
+
         return dispositiuRepository.save(mapToDispositiu(dispositiu));
         
     }
