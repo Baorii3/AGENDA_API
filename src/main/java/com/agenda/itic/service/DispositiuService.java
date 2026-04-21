@@ -77,6 +77,7 @@ public class DispositiuService {
         Dispositiu dispositiu = dispositiuRepository.findByMac(mac).orElseThrow(
             () -> new ResourceNotFoundException("Dispositiu no trobat amb mac: " + mac)
         );
+        dispositiu.setIp(dispositiu.getIp());
         dispositiu.setHeartbeat(LocalDateTime.now());
         dispositiu.setActiu(true);
         return dispositiuRepository.save(dispositiu);
