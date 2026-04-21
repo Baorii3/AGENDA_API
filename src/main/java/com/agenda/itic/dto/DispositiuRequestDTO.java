@@ -5,19 +5,9 @@ public class DispositiuRequestDTO {
     private String ip;
     private String nom;
     private String tipus;
-    private boolean actiu;
 
     public String getNom() {
         return nom;
-    }
-
-    public boolean getActiu() {
-        return actiu;
-    }
-
-
-    public void setActiu(boolean actiu) {
-        this.actiu = actiu;
     }
 
     public void setNom(String nom) {

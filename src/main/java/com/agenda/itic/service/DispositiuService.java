@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.agenda.itic.dto.DispositiuRequestDTO;
@@ -27,7 +28,7 @@ public class DispositiuService {
         dispositiu.setIp(dispositiuDTO.getIp());
         dispositiu.setMac(dispositiuDTO.getMac());
         dispositiu.setTipus(dispositiuDTO.getTipus());        
-        dispositiu.setActiu(dispositiuDTO.getActiu());
+        dispositiu.setActiu(true);
         dispositiu.setHeartbeat(LocalDateTime.now());
         return dispositiu;
     }
@@ -48,16 +49,50 @@ public class DispositiuService {
         return dispositiuRepository.findAll();
     }
 
+    public Dispositiu getDispositiuByMac(String mac) {
+        return dispositiuRepository.findByMac(mac).orElseThrow(
+            () -> new ResourceNotFoundException("Dispositiu no trobat amb mac: " + mac)
+        );
+    }
+
     public Dispositiu createDispositiu(DispositiuRequestDTO dispositiu) {
         if (dispositiu == null) {
             throw new BadRequestException("DispositiuRequestDTO no pot ser null");
         }
-        if (dispositiuRepository.findByMac(dispositiu.getMac()) != null) {
-            
+        if (dispositiu.getMac() == null || dispositiu.getMac().isEmpty()) {
+            throw new BadRequestException("El camp 'mac' és obligatori");
+        }
+        if (dispositiu.getIp() == null || dispositiu.getIp().isEmpty()) {
+            throw new BadRequestException("El camp 'ip' és obligatori");
         }
 
+        if (dispositiuRepository.findByMac(dispositiu.getMac()).isPresent()) {
+            return setDispositiuHeartbeat(dispositiu.getMac());
+        }
         return dispositiuRepository.save(mapToDispositiu(dispositiu));
         
+    }
+
+    public Dispositiu setDispositiuHeartbeat(String mac) {
+        Dispositiu dispositiu = dispositiuRepository.findByMac(mac).orElseThrow(
+            () -> new ResourceNotFoundException("Dispositiu no trobat amb mac: " + mac)
+        );
+        dispositiu.setHeartbeat(LocalDateTime.now());
+        dispositiu.setActiu(true);
+        return dispositiuRepository.save(dispositiu);
+    }
+
+    @Scheduled(fixedRate = 60000)
+    public void comprovarDispositiusInactius() {
+        LocalDateTime faCincMinuts = LocalDateTime.now().minusMinutes(5);
+        
+        List<Dispositiu> dispositiusDesconnectats = dispositiuRepository.findByActiuTrueAndHeartbeatBefore(faCincMinuts);
+        
+        for (Dispositiu d : dispositiusDesconnectats) {
+            d.setActiu(false);
+            dispositiuRepository.save(d);
+            System.out.println("S'ha desconnectat el dispositiu: " + d.getMac());
+        }
     }
 
     public Dispositiu updateDispositiu(Long id, DispositiuRequestDTO dispositiuDTO) {
@@ -74,6 +109,10 @@ public class DispositiuService {
     }
 
     public void deleteDispositiu(Long id) {
-        dispositiuRepository.deleteById(id);
+        Dispositiu dispositiu = dispositiuRepository.findById(id).orElseThrow(
+            () -> new ResourceNotFoundException("Dispositiu no trobat amb id: " + id)
+        );
+
+        dispositiuRepository.delete(dispositiu);
     }
 }

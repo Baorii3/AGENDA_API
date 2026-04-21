@@ -3,7 +3,6 @@ package com.agenda.itic.service;
 import java.util.List;
 import java.util.Locale;
 
-import org.checkerframework.checker.units.qual.t;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
