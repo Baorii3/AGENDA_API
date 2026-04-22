@@ -83,7 +83,7 @@ public class DispositiuService {
         return dispositiuRepository.save(dispositiu);
     }
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 300 * 1000) // cada 5 min (300 segundos)
     public void comprovarDispositiusInactius() {
         LocalDateTime faCincMinuts = LocalDateTime.now().minusMinutes(5);
         
