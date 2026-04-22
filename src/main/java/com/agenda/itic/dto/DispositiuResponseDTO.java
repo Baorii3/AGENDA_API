@@ -7,17 +7,19 @@ public class DispositiuResponseDTO {
     private String nom;
     private String mac;
     private String ip;
+    private String tipus;
     private boolean actiu;
     private LocalDateTime dataCreacio;
     private LocalDateTime heartbeat;
 
     public DispositiuResponseDTO(){}
 
-    public DispositiuResponseDTO(long id, String nom, String mac, String ip, boolean actiu, LocalDateTime dataCreacio, LocalDateTime heartbeat) {
+    public DispositiuResponseDTO(long id, String nom, String mac, String ip, String tipus, boolean actiu, LocalDateTime dataCreacio, LocalDateTime heartbeat) {
         this.id = id;
         this.nom = nom;
         this.mac = mac;
         this.ip = ip;
+        this.tipus = tipus;
         this.actiu = actiu;
         this.dataCreacio = dataCreacio;
         this.heartbeat = heartbeat;
@@ -53,6 +55,14 @@ public class DispositiuResponseDTO {
 
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    public String getTipus() {
+        return tipus;
+    }
+
+    public void setTipus(String tipus) {
+        this.tipus = tipus;
     }
 
     public boolean isActiu() {
