@@ -2,7 +2,6 @@ package com.agenda.itic.model;
 
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,20 +9,20 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 
 @Entity
-public class Rol {
+public class Recurs {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private String nombre;
 
-    @OneToMany(mappedBy = "rol", cascade = CascadeType.ALL)
-    private List<Permis> permisos;
+    @OneToMany(mappedBy = "recurso")
+    private List<Permis> permis;
 
-    public Rol() {
+    public Recurs() {
     }
 
-    public Rol(String nombre) {
+    public Recurs(String nombre) {
         this.nombre = nombre;
     }
 
@@ -43,11 +42,11 @@ public class Rol {
         this.nombre = nombre;
     }
 
-    public List<Permis> getPermisos() {
-        return permisos;
+    public List<Permis> getPermis() {
+        return permis;
     }
 
-    public void setPermisos(List<Permis> permisos) {
-        this.permisos = permisos;
+    public void setPermis(List<Permis> permis) {
+        this.permis = permis;
     }
 }

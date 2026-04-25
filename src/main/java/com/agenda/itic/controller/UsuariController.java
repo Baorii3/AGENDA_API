@@ -33,31 +33,31 @@ public class UsuariController {
     @Autowired
     UsuariService usuariService;
 
-    @GetMapping("/usuaris")
+    @GetMapping
     public ResponseEntity<List<UsuariResponseDto>> getUsuaris() {
         List<UsuariResponseDto> usuaris = usuariService.getUsuaris();
         return ResponseEntity.status(HttpStatus.OK).body(usuaris);
     }
 
-    @GetMapping("/usuaris/{actiu}")
+    @GetMapping("/actius/{actiu}")
     public ResponseEntity<List<UsuariResponseDto>> getUsuarisActius(@PathVariable boolean actiu) {
         List<UsuariResponseDto> usuaris = usuariService.getUsuarisActius(actiu);
         return ResponseEntity.status(HttpStatus.OK).body(usuaris);
     }
 
-    @PostMapping("/usuaris")
+    @PostMapping
     public ResponseEntity<UsuariResponseDto> createUsuari(@Valid @RequestBody UsuariTokenDto usuari) {
         UsuariResponseDto createdUsuari = usuariService.createUsuari(usuari);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUsuari);
     }
 
-    @PutMapping("/usuaris/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<UsuariResponseDto> updateUsuari(@PathVariable Long id, @Valid @RequestBody UsuariTokenDto usuariRequestDTO) {
         UsuariResponseDto updatedUsuari = usuariService.updateUsuari(id, usuariRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).body(updatedUsuari);
     }
 
-    @DeleteMapping("/usuaris/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUsuari(@PathVariable Long id) {
         usuariService.deleteUsuari(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -69,7 +69,7 @@ public class UsuariController {
         return ResponseEntity.status(HttpStatus.CREATED).body(usuari);
     }
     
-    @GetMapping("/usuaris/profes")
+    @GetMapping("/profes")
     public ResponseEntity<List<UsuariResponseDto>> getUsuariProfes() {
         return ResponseEntity.ok(usuariService.getUsuarisProfes());
     }

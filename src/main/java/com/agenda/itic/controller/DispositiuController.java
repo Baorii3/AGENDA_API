@@ -28,12 +28,12 @@ public class DispositiuController {
     @Autowired
     DispositiuService dispositiuService;
 
-    @GetMapping("/dispositius")
+    @GetMapping
     public ResponseEntity<List<Dispositiu>> getAllDispositius() {
         return ResponseEntity.status(HttpStatus.OK).body(dispositiuService.getDispositius());
     }
 
-    @PostMapping("/dispositius")
+    @PostMapping
     public ResponseEntity<List<Dispositiu>> postMethodName(@RequestBody DispositiuRequestDTO dispositiu) {
         Dispositiu entity = dispositiuService.createDispositiu(dispositiu);
         return ResponseEntity.status(HttpStatus.CREATED).body(List.of(entity));
@@ -45,13 +45,13 @@ public class DispositiuController {
         return ResponseEntity.status(HttpStatus.OK).body(updatedEntity);
     }
 
-    @PutMapping("/dispositius/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Dispositiu> putMethodName(@PathVariable Long id, @RequestBody DispositiuRequestDTO entity) {
         Dispositiu updatedEntity = dispositiuService.updateDispositiu(id, entity);
         return ResponseEntity.status(HttpStatus.OK).body(updatedEntity);
     }
 
-    @DeleteMapping("/dispositius/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDispositiu(@PathVariable Long id) {
         dispositiuService.deleteDispositiu(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

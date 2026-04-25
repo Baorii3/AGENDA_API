@@ -1,6 +1,5 @@
 package com.agenda.itic.service;
 
-import com.agenda.itic.repository.ActivitatRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 

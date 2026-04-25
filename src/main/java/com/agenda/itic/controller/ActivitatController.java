@@ -29,38 +29,38 @@ public class ActivitatController {
 
     @Autowired
     ActivitatService activitatService;
-    @GetMapping("/activitats/model")
+    @GetMapping("/model")
     public ResponseEntity<List<Activitat>> getActivitatModel() {
         return ResponseEntity.ok(activitatService.getActivitatModel());
     }
-    @GetMapping("/activitats")
+    @GetMapping
     public ResponseEntity<List<ActivitatResponseDTO>> getAllActivitats() {
         return ResponseEntity.status(HttpStatus.OK).body(activitatService.getAllActivitats());
     }
 
-    @GetMapping("/activitat/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ActivitatResponseDTO> getActivitatById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(activitatService.getActivitatById(id));
     }
 
-    @GetMapping("/activitats/{idUsuari}")
+    @GetMapping("/usuari/{idUsuari}")
     public ResponseEntity<List<ActivitatResponseDTO>> getActivitatsByUsuari(@PathVariable Long idUsuari) {
         return ResponseEntity.status(HttpStatus.OK).body(activitatService.getActivitatsByUsuari(idUsuari));
     }
 
-    @PostMapping("/activitat")
+    @PostMapping
     public ResponseEntity<ActivitatResponseDTO> createActivitat(@Valid @RequestBody ActivitatRequestDTO activitatRequestDTO) {
         ActivitatResponseDTO response = activitatService.createActivitat(activitatRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @DeleteMapping("/activitat/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteActivitat(@PathVariable Long id) {
         activitatService.deleteActivitat(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @DeleteMapping("/activitats")
+    @DeleteMapping
     public ResponseEntity<Void> deleteAllActivitats() {
         activitatService.getActivitatModel().forEach(a -> activitatService.deleteActivitat(a.getId_activitat()));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

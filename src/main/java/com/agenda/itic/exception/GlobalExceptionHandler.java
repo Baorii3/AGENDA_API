@@ -25,7 +25,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException e) {
         String message = "Violación de restricción de base de datos";
-        if (e.getMessage().contains("nom")) {
+        String exceptionMessage = e.getMostSpecificCause() != null
+                ? e.getMostSpecificCause().getMessage()
+                : e.getMessage();
+
+        if (exceptionMessage != null && exceptionMessage.toLowerCase().contains("email")) {
+            message = "Ya existe un usuario con ese correo";
+        } else if (exceptionMessage != null && (exceptionMessage.toLowerCase().contains("sala")
+                || exceptionMessage.toLowerCase().contains("salas"))) {
             message = "Ya existe una sala con ese nombre";
         }
         ErrorResponse errorResponse = new ErrorResponse(400, message);

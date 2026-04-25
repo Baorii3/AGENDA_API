@@ -33,7 +33,7 @@ public class ActivitatService {
     public List<ActivitatResponseDTO> getAllActivitats() {
         return activitatRepository.findAll()
                 .stream()
-                .map(act -> toDTO(act))
+                .map(this::toDTO)
                 .toList();
     }
 
@@ -72,7 +72,7 @@ public class ActivitatService {
     public List<ActivitatResponseDTO> getActivitatsByUsuari(Long idUsuari) {
         return activitatRepository.findByUserId(idUsuari)
                 .stream()
-                .map(act -> toDTO(act))
+                .map(this::toDTO)
                 .toList();
     }
 

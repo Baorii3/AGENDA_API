@@ -25,8 +25,8 @@ public class CorreoPermitidoService {
 
     public List<CorreoPermitidoResponseDto> getAllCorreosPermitidos() {
         return correopermitidorepository.findAll().stream()
-                .map(correoPermitido -> toDTO(correoPermitido))
-                .toList();
+            .map(this::toDTO)
+            .toList();
     }
 
     public CorreoPermitidoResponseDto getCorreoPermitido(String correoPermitido) {

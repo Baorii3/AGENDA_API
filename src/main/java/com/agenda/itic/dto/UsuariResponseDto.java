@@ -7,13 +7,13 @@ public class UsuariResponseDto {
     private String nom;
     private String email;
     private String rol;
-    private List<String> permisos;
+    private List<PermisUsuariDto> permisos;
     private String picture;
 
     public UsuariResponseDto() {
     }
 
-    public UsuariResponseDto(Long id_usuari, String nom, String email, String rol, List<String> permisos, String picture) {
+    public UsuariResponseDto(Long id_usuari, String nom, String email, String rol, List<PermisUsuariDto> permisos, String picture) {
         this.id_usuari = id_usuari;
         this.nom = nom;
         this.email = email;
@@ -61,11 +61,11 @@ public class UsuariResponseDto {
         this.picture = picture;
     }
 
-    public List<String> getPermisos() {
+    public List<PermisUsuariDto> getPermisos() {
         return permisos;
     }
 
-    public void setPermisos(List<String> permisos) {
+    public void setPermisos(List<PermisUsuariDto> permisos) {
         this.permisos = permisos;
     }
 }

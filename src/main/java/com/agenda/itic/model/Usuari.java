@@ -16,7 +16,8 @@ public class Usuari {
 
     @Column(nullable = false, unique = true)
     private String email;
-    @Enumerated(EnumType.STRING)
+    @ManyToOne
+    @JoinColumn(name = "rol_id")
     private Rol rol;
     private boolean actiu;
     private LocalDateTime dataCreacio;
@@ -26,7 +27,6 @@ public class Usuari {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Activitat> activitats;
 
-    // AUTH
     private String provider;
     private String providerId;
 

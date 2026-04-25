@@ -11,8 +11,10 @@ import org.springframework.stereotype.Service;
 
 import com.agenda.itic.dto.UsuariResponseDto;
 import com.agenda.itic.dto.UsuariTokenDto;
+import com.agenda.itic.dto.PermisUsuariDto;
 import com.agenda.itic.exception.BadRequestException;
 import com.agenda.itic.exception.ResourceNotFoundException;
+import com.agenda.itic.model.Permis;
 import com.agenda.itic.model.Rol;
 import com.agenda.itic.model.Usuari;
 import com.agenda.itic.repository.UsuariRepository;
@@ -26,31 +28,38 @@ public class UsuariService {
     @Autowired
     CorreoPermitidoService correoPermitidoService;
 
+    @Autowired
+    RolService rolService;
+
     private UsuariResponseDto toDTO(Usuari usuari) {
         return new UsuariResponseDto(
                 usuari.getId(),
                 usuari.getNom(),
                 usuari.getEmail(),
-                usuari.getRol().name(),
-                usuari.getRol().getPermisos().stream().toList(),
+                usuari.getRol() == null ? null : usuari.getRol().getNombre(),
+                usuari.getRol() == null || usuari.getRol().getPermisos() == null
+                        ? List.of()
+                        : usuari.getRol().getPermisos().stream().map(this::toPermisDto).toList(),
                 usuari.getFotoPerfil()
         );
     }
 
+    private PermisUsuariDto toPermisDto(Permis permis) {
+        return new PermisUsuariDto(permis.getRecurso().getNombre(), permis.getValueAccio());
+    }
+
     public List<UsuariResponseDto> getUsuaris() {
-        return usuariRepository.findAll().stream().map(user -> toDTO(user)).toList();
+        return usuariRepository.findAll().stream().map(this::toDTO).toList();
     }
 
     public List<UsuariResponseDto> getUsuarisActius(boolean actiu) {
-        return usuariRepository.findByActiu(actiu).stream().map(user -> toDTO(user)).toList();
+        return usuariRepository.findByActiu(actiu).stream().map(this::toDTO).toList();
     }
 
     public List<UsuariResponseDto> getUsuarisProfes() {
-        return usuariRepository.findByRol(Rol.PROFESSOR).stream().map(user -> toDTO(user)).toList();
+        Rol professor = rolService.getRolByName("PROFESSOR");
+        return usuariRepository.findByRol(professor).stream().map(this::toDTO).toList();
     }
-
-
-    // ELIMINAR PARA FINAL
     private Usuari mapToUsuari(UsuariTokenDto usuariRequestDTO) {
         Usuari usuari = new Usuari();
         usuari.setNom(usuariRequestDTO.getNom());
@@ -64,34 +73,43 @@ public class UsuariService {
     }
 
     private Rol getRol(String email) {
+        String rolName;
         if (!email.contains("@iticbcn.cat")) {
             throw new BadRequestException("Només s'accepten correus de l'ITIC BCN.");
         }
 
         try {
             if (correoPermitidoService.getCorreoPermitido(email) != null) {
-                return Rol.ADMIN;
+                rolName = "ADMIN";
+                return getOrCreateRol(rolName);
             }
         } catch (ResourceNotFoundException e) {
-            // No es necesario manejar esta excepción aquí, ya que simplemente significa que el correo no está en la lista blanca.
         }
             
         if (!email.split("@")[0].contains("_")) {
-            return Rol.PROFESSOR;
+            rolName = "PROFESSOR";
+            return getOrCreateRol(rolName);
         }
 
-        return Rol.USUARI;
+        rolName = "USUARI";
+        return getOrCreateRol(rolName);
     }   
 
-    // ELIMINAR PARA FINAL
+    private Rol getOrCreateRol(String nombre) {
+        return rolService.getOrCreateRol(nombre);
+    }
+
     public UsuariResponseDto createUsuari(UsuariTokenDto usuariRequestDTO) {
+        if (usuariRepository.findByEmail(usuariRequestDTO.getEmail()).isPresent()) {
+            throw new BadRequestException("Ya existe un usuario con ese correo");
+        }
+
         Rol rol = getRol(usuariRequestDTO.getEmail());
         Usuari usuari = mapToUsuari(usuariRequestDTO);
         usuari.setRol(rol);
         return toDTO(usuariRepository.save(usuari));
     }
 
-    // Crearemos un usuario o no, a traves de un token
     public UsuariResponseDto createOrUpdateUsuariFromToken(String token) {
         String email = normalizeEmail(getTokenEmail(token));
 
@@ -115,6 +133,12 @@ public class UsuariService {
     public UsuariResponseDto updateUsuari(Long id, UsuariTokenDto usuariRequestDTO) {
         Usuari usuari = usuariRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Usuari no trobat"));
+
+        usuariRepository.findByEmail(usuariRequestDTO.getEmail())
+                .filter(existing -> !existing.getId().equals(id))
+                .ifPresent(existing -> {
+                    throw new BadRequestException("Ya existe un usuario con ese correo");
+                });
             
         usuari.setNom(usuariRequestDTO.getNom());
         usuari.setEmail(usuariRequestDTO.getEmail());

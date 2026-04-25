@@ -28,7 +28,7 @@ public class SalaService {
     }
 
     public List<SalaResponseDTO> getAllSalas() {
-        return salaRepository.findAll().stream().map(sala -> toDto(sala)).toList();
+        return salaRepository.findAll().stream().map(this::toDto).toList();
     }
 
     public SalaResponseDTO createSala(SalaRequest salaRequest) {
