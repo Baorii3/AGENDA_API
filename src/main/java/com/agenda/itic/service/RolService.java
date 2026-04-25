@@ -9,9 +9,7 @@ import com.agenda.itic.dto.RolRequestDTO;
 import com.agenda.itic.dto.RolResponseDTO;
 import com.agenda.itic.exception.BadRequestException;
 import com.agenda.itic.exception.ResourceNotFoundException;
-import com.agenda.itic.model.Permis;
 import com.agenda.itic.model.Rol;
-import com.agenda.itic.repository.PermisRepository;
 import com.agenda.itic.repository.RolRepository;
 
 @Service
@@ -20,14 +18,11 @@ public class RolService {
     @Autowired
     RolRepository rolRepository;
 
-    @Autowired
-    PermisRepository permisRepository;
-
     private RolResponseDTO toDTO(Rol rol) {
         return new RolResponseDTO(
                 rol.getId(),
                 rol.getNombre(),
-                permisRepository.findByRolId(rol.getId()).stream().map(Permis::getId).toList());
+                rol.getPermisos() == null ? List.of() : rol.getPermisos().stream().map(com.agenda.itic.model.Permis::getId).toList());
     }
 
     public List<RolResponseDTO> getAllRoles() {
@@ -48,12 +43,13 @@ public class RolService {
             throw new BadRequestException("El nom del rol no pot estar buit");
         }
         String normalizedName = nombre.trim().toUpperCase();
-        return rolRepository.findByNombreIgnoreCase(normalizedName)
-                .orElseGet(() -> {
-                    Rol rol = new Rol();
-                    rol.setNombre(normalizedName);
-                    return rolRepository.save(rol);
-                });
+        Rol rol = rolRepository.findByNombreIgnoreCase(normalizedName).orElseThrow(() -> new ResourceNotFoundException("Rol no trobat: " + normalizedName))   ;
+        if (rol == null) {
+            rol = new Rol();
+            rol.setNombre(normalizedName);
+            rol = rolRepository.save(rol);
+        }
+        return rol;
     }
 
     public RolResponseDTO getRolById(Long id) {
