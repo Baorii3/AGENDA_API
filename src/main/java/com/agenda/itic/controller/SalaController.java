@@ -3,6 +3,7 @@ package com.agenda.itic.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.agenda.itic.config.SecurityExpressions;
 import com.agenda.itic.dto.SalaRequest;
 import com.agenda.itic.dto.SalaResponseDTO;
 import com.agenda.itic.service.SalaService;
@@ -14,6 +15,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,12 +39,14 @@ public class SalaController {
     }
 
     @PostMapping
+    @PreAuthorize(SecurityExpressions.SALA_CREATE)
     public ResponseEntity<SalaResponseDTO> postSala(@Valid @RequestBody SalaRequest salaRequest) {
         SalaResponseDTO sala = salaService.createSala(salaRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(sala);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize(SecurityExpressions.SALA_UPDATE)
     public ResponseEntity<SalaResponseDTO> putSala(@PathVariable Long id, @Valid @RequestBody SalaRequest salaRequest) {
         SalaResponseDTO salaActualitzada = salaService.updateSala(id, salaRequest);
         return ResponseEntity.status(HttpStatus.OK).body(salaActualitzada);
@@ -50,6 +54,7 @@ public class SalaController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize(SecurityExpressions.SALA_DELETE)
     public ResponseEntity<Void> deleteSala(@PathVariable Long id) {
         salaService.deleteSala(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

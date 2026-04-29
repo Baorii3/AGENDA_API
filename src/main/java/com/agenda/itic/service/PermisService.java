@@ -32,7 +32,7 @@ public class PermisService {
         return new PermisResponseDTO(
                 permis.getId(),
                 permis.getRecurso().getId(),
-                permis.getRecurso().getNombre(),
+                permis.getRecurso().getNombre().toString(),
                 permis.getRol().getNombre(),
                 permis.getValueAccio(),
                 toAccions(permis.getValueAccio()));

@@ -1,18 +1,13 @@
 package com.agenda.itic.config;
 
-import java.util.Collection;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -23,6 +18,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+// @EnableMethodSecurity
 public class SecurityConfig {
     @Bean
     @ConditionalOnProperty(name = "spring.profiles.active", havingValue = "local", matchIfMissing = false)
@@ -35,6 +31,7 @@ public class SecurityConfig {
                         .requestMatchers("/activitats/**").permitAll()
                     .requestMatchers("/salas/**").permitAll()
                         .requestMatchers("/correos-permitidos/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/usuaris/token").authenticated()
                     .requestMatchers("/usuaris/**").permitAll()
                     .requestMatchers("/dispositius/**").permitAll()
                     .requestMatchers("/roles/**").permitAll()
@@ -70,8 +67,9 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui.html").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .anyRequest().permitAll())
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> {
-                }))
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(
+                    jwt -> jwt.jwkSetUri("https://www.googleapis.com/oauth2/v3/certs")
+                ))
                 .oauth2Login(oauth -> oauth
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                         .defaultSuccessUrl("/oauth/google/home", true)

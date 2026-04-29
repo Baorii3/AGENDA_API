@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import com.agenda.itic.dto.UsuariResponseDto;
@@ -45,7 +46,7 @@ public class UsuariService {
     }
 
     private PermisUsuariDto toPermisDto(Permis permis) {
-        return new PermisUsuariDto(permis.getRecurso().getNombre(), permis.getValueAccio());
+        return new PermisUsuariDto(permis.getRecurso().getNombre().toString(), permis.getValueAccio());
     }
 
     public List<UsuariResponseDto> getUsuaris() {
@@ -54,6 +55,10 @@ public class UsuariService {
 
     public List<UsuariResponseDto> getUsuarisActius(boolean actiu) {
         return usuariRepository.findByActiu(actiu).stream().map(this::toDTO).toList();
+    }
+    public UsuariResponseDto getUsuariById(Long id) {
+        return toDTO(usuariRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuari no trobat")));
     }
 
     public List<UsuariResponseDto> getUsuarisProfes() {
@@ -110,8 +115,15 @@ public class UsuariService {
         return toDTO(usuariRepository.save(usuari));
     }
 
-    public UsuariResponseDto createOrUpdateUsuariFromToken(String token) {
-        String email = normalizeEmail(getTokenEmail(token));
+    public UsuariResponseDto createOrUpdateUsuariFromToken(Jwt jwt) {
+        if (jwt == null) {
+            throw new BadRequestException("Token inválido");
+        }
+
+        String email = normalizeEmail((String) jwt.getClaim("email"));
+        if (email == null) {
+            throw new BadRequestException("Token inválido: falta el claim email");
+        }
 
         Optional<Usuari> usuariOptional = usuariRepository.findByEmail(email);
         if (usuariOptional.isPresent()) {
@@ -120,12 +132,15 @@ public class UsuariService {
 
         Usuari user = new Usuari();
         user.setEmail(email);
-        user.setNom(getTokenName(token) == null ? "Desconocido" : getTokenName(token));
-        user.setFotoPerfil(getTokenPicture(token));
+        String name = jwt.getClaim("name");
+        user.setNom(name == null ? "Desconocido" : name);
+        String picture = jwt.getClaim("picture");
+        user.setFotoPerfil(picture);
         user.setRol(getRol(email));
         user.setActiu(true);
-        user.setProvider(getTokenProvider(token) == null ? "cognito" : getTokenProvider(token));
-        user.setProviderId(getTokenProviderId(token));
+        user.setProvider("google");
+        String providerId = jwt.getClaim("sub");
+        user.setProviderId(providerId);
         user = usuariRepository.save(user);
         return toDTO(user);
     }
@@ -239,14 +254,18 @@ public class UsuariService {
     }
 
     private String decodeTokenPayload(String token) {
-        String normalizedToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token;
-        String[] parts = normalizedToken.split("\\.");
-        if (parts.length != 3) {
+        try {
+            String normalizedToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token;
+            String[] parts = normalizedToken.split("\\.", -1);
+            if (parts.length != 3) {
+                return null;
+            }
+
+            byte[] decoded = Base64.getUrlDecoder().decode(parts[1].trim());
+            return new String(decoded, StandardCharsets.UTF_8);
+        } catch (IllegalArgumentException e) {
             return null;
         }
-
-        byte[] decoded = Base64.getUrlDecoder().decode(parts[1]);
-        return new String(decoded, StandardCharsets.UTF_8);
     }
 
     private String extractJsonValue(String json, String key) {

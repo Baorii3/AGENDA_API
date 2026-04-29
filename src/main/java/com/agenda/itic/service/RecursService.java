@@ -10,6 +10,7 @@ import com.agenda.itic.dto.RecursResponseDTO;
 import com.agenda.itic.exception.BadRequestException;
 import com.agenda.itic.exception.ResourceNotFoundException;
 import com.agenda.itic.model.Recurs;
+import com.agenda.itic.model.RecursNom;
 import com.agenda.itic.repository.RecursRepository;
 
 @Service
@@ -19,7 +20,7 @@ public class RecursService {
     RecursRepository recursRepository;
 
     private RecursResponseDTO toDTO(Recurs recurs) {
-        return new RecursResponseDTO(recurs.getId(), recurs.getNombre());
+        return new RecursResponseDTO(recurs.getId(), recurs.toString());
     }
 
     public List<RecursResponseDTO> getAllRecursos() {
@@ -39,9 +40,11 @@ public class RecursService {
         recursRepository.findByNombreIgnoreCase(normalizedName).ifPresent(existing -> {
             throw new BadRequestException("Recurs ja registrat");
         });
-
+        if (RecursNom.valueOf(normalizedName) == null) {
+            throw new BadRequestException("Nom de recurs no vàlid");
+        }
         Recurs recurs = new Recurs();
-        recurs.setNombre(normalizedName);
+        recurs.setNombre(RecursNom.valueOf(normalizedName));
         return toDTO(recursRepository.save(recurs));
     }
 
@@ -60,7 +63,10 @@ public class RecursService {
             }
         });
 
-        recurs.setNombre(normalizedName);
+        if (RecursNom.valueOf(normalizedName) == null) {
+            throw new BadRequestException("Nom de recurs no vàlid");
+        }
+        recurs.setNombre(RecursNom.valueOf(normalizedName));
         return toDTO(recursRepository.save(recurs));
     }
 

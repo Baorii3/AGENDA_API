@@ -10,11 +10,13 @@ import com.agenda.itic.dto.ActivitatRequestDTO;
 import com.agenda.itic.dto.ActivitatResponseDTO;
 import com.agenda.itic.exception.ResourceNotFoundException;
 import com.agenda.itic.model.Activitat;
+import com.agenda.itic.model.Usuari;
 import com.agenda.itic.repository.ActivitatRepository;
 import com.agenda.itic.repository.SalaRepository;
 
 @Service
 public class ActivitatService {
+
 
     @Autowired
     UsuariRepository usuariRepository;
@@ -24,10 +26,6 @@ public class ActivitatService {
 
     @Autowired
     SalaRepository salaRepository;
-
-
-    ActivitatService(UsuariRepository usuariRepository) {
-    }
 
 
     public List<ActivitatResponseDTO> getAllActivitats() {
@@ -77,14 +75,21 @@ public class ActivitatService {
     }
 
     public ActivitatResponseDTO createActivitat(ActivitatRequestDTO activitatRequestDTO) {
-        if (!salaRepository.existsById(activitatRequestDTO.getId_sala())) {
-            throw new ResourceNotFoundException("No se puede crear la actividad: La sala con ID " 
-            + activitatRequestDTO.getId_sala() + " no existe.");
+        if (activitatRequestDTO.getId_sala() == null || activitatRequestDTO.getId_usuari() == null) {
+            throw new IllegalArgumentException("Los IDs de la sala y el usuario son obligatorios.");
         }
+
+        getUsuariOrThrow(activitatRequestDTO.getId_usuari());
+
         if (!usuariRepository.existsById(activitatRequestDTO.getId_usuari())) {
             throw new ResourceNotFoundException("No se puede crear la actividad: El usuario con ID " 
             + activitatRequestDTO.getId_usuari() + " no existe.");
         }
+        if (!salaRepository.existsById(activitatRequestDTO.getId_sala())) {
+            throw new ResourceNotFoundException("No se puede crear la actividad: La sala con ID " 
+            + activitatRequestDTO.getId_sala() + " no existe.");
+        }
+
         if (activitatRequestDTO.getHoraInici().isAfter(activitatRequestDTO.getHoraFi())) {
             throw new IllegalArgumentException("La hora de inicio no puede ser posterior a la hora de fin.");
         }
@@ -105,8 +110,18 @@ public class ActivitatService {
     public void deleteActivitat(Long id) {
         Activitat activitat = activitatRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Activitat no trobada"));
+
+
         activitatRepository.delete(activitat);
     }
+
+    private Usuari getUsuariOrThrow(Long idUsuari) {
+        return usuariRepository.findById(idUsuari)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "No se puede crear la actividad: El usuario con ID " + idUsuari + " no existe."));
+    }
+
+    
 
     public List<Activitat> getActivitatModel() {
         return activitatRepository.findAll();
