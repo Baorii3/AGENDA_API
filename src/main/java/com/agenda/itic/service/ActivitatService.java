@@ -1,15 +1,21 @@
 package com.agenda.itic.service;
 
-import com.agenda.itic.repository.UsuariRepository;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+
+import com.agenda.itic.repository.UsuariRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.agenda.itic.dto.ActivitatRequestDTO;
 import com.agenda.itic.dto.ActivitatResponseDTO;
+import com.agenda.itic.exception.BadRequestException;
 import com.agenda.itic.exception.ResourceNotFoundException;
 import com.agenda.itic.model.Activitat;
+import com.agenda.itic.model.Sala;
 import com.agenda.itic.model.Usuari;
 import com.agenda.itic.repository.ActivitatRepository;
 import com.agenda.itic.repository.SalaRepository;
@@ -52,13 +58,13 @@ public class ActivitatService {
 
     private Activitat toModel(ActivitatRequestDTO activitatRequestDTO) {
         Activitat activitat = new Activitat();
-        activitat.setSala(salaRepository.findById(activitatRequestDTO.getId_sala()).orElseThrow(() -> new ResourceNotFoundException("Sala no trobada")));
+        activitat.setSala(getSalaOrThrow(activitatRequestDTO.getId_sala()));
         activitat.setTitol(activitatRequestDTO.getTitol());
         activitat.setDescripcio(activitatRequestDTO.getDescripcio());
         activitat.setData(activitatRequestDTO.getData());
         activitat.setHoraInici(activitatRequestDTO.getHoraInici());
         activitat.setHoraFi(activitatRequestDTO.getHoraFi());
-        activitat.setUser(usuariRepository.findById(activitatRequestDTO.getId_usuari()).orElseThrow(() -> new ResourceNotFoundException("Usuari no trobat")));
+        activitat.setUser(getUsuariOrThrow(activitatRequestDTO.getId_usuari()));
         return activitat;
     }
 
@@ -75,33 +81,7 @@ public class ActivitatService {
     }
 
     public ActivitatResponseDTO createActivitat(ActivitatRequestDTO activitatRequestDTO) {
-        if (activitatRequestDTO.getId_sala() == null || activitatRequestDTO.getId_usuari() == null) {
-            throw new IllegalArgumentException("Los IDs de la sala y el usuario son obligatorios.");
-        }
-
-        getUsuariOrThrow(activitatRequestDTO.getId_usuari());
-
-        if (!usuariRepository.existsById(activitatRequestDTO.getId_usuari())) {
-            throw new ResourceNotFoundException("No se puede crear la actividad: El usuario con ID " 
-            + activitatRequestDTO.getId_usuari() + " no existe.");
-        }
-        if (!salaRepository.existsById(activitatRequestDTO.getId_sala())) {
-            throw new ResourceNotFoundException("No se puede crear la actividad: La sala con ID " 
-            + activitatRequestDTO.getId_sala() + " no existe.");
-        }
-
-        if (activitatRequestDTO.getHoraInici().isAfter(activitatRequestDTO.getHoraFi())) {
-            throw new IllegalArgumentException("La hora de inicio no puede ser posterior a la hora de fin.");
-        }
-        if (activitatRequestDTO.getHoraInici().equals(activitatRequestDTO.getHoraFi())) {
-            throw new IllegalArgumentException("La hora de inicio no puede ser igual a la hora de fin.");
-        }
-        if (activitatRequestDTO.getData().isBefore(java.time.LocalDate.now())) {
-            throw new IllegalArgumentException("La fecha de la actividad no puede ser anterior a la fecha actual.");
-        }
-        if (activitatRequestDTO.getData().isEqual(java.time.LocalDate.now()) && activitatRequestDTO.getHoraInici().isBefore(java.time.LocalTime.now())) {
-            throw new IllegalArgumentException("La hora de inicio de la actividad no puede ser anterior a la hora actual.");
-        }
+        validateActivitatRequest(activitatRequestDTO);
         Activitat activitat = toModel(activitatRequestDTO);
         activitat = activitatRepository.save(activitat);
         return toDTO(activitat);
@@ -119,6 +99,53 @@ public class ActivitatService {
         return usuariRepository.findById(idUsuari)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "No se puede crear la actividad: El usuario con ID " + idUsuari + " no existe."));
+    }
+
+    private Sala getSalaOrThrow(Long idSala) {
+        return salaRepository.findById(idSala)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "No se puede crear la actividad: La sala con ID " + idSala + " no existe."));
+    }
+
+    private void validateActivitatRequest(ActivitatRequestDTO activitatRequestDTO) {
+        if (activitatRequestDTO.getId_sala() == null || activitatRequestDTO.getId_usuari() == null) {
+            throw new BadRequestException("Los IDs de la sala y el usuario son obligatorios.");
+        }
+
+        LocalTime horaInici = activitatRequestDTO.getHoraInici();
+        LocalTime horaFi = activitatRequestDTO.getHoraFi();
+        LocalDate data = activitatRequestDTO.getData();
+
+        if (horaInici.getMinute() % 15 != 0) {
+            throw new BadRequestException("La hora de inicio debe empezar en un cuarto de hora.");
+        }
+
+        if (!horaFi.isAfter(horaInici)) {
+            throw new BadRequestException("La hora de inicio debe ser anterior a la hora de fin.");
+        }
+
+        long duracionMinutos = Duration.between(horaInici, horaFi).toMinutes();
+        if (duracionMinutos > 120) {
+            throw new BadRequestException("La actividad no puede durar más de 2 horas.");
+        }
+
+        if (data.isBefore(LocalDate.now())) {
+            throw new BadRequestException("La fecha de la actividad no puede ser anterior a la fecha actual.");
+        }
+
+        if (data.isEqual(LocalDate.now()) && horaInici.isBefore(LocalTime.now())) {
+            throw new BadRequestException("La hora de inicio de la actividad no puede ser anterior a la hora actual.");
+        }
+
+        // Comprueba si la sala ya tiene otra actividad que se solape en este horario.
+        if (activitatRepository.existsBySalaIdAndDataAndHoraIniciLessThanAndHoraFiGreaterThanAndActivaTrue(
+                activitatRequestDTO.getId_sala(),
+                data,
+                horaFi,
+                horaInici)) {
+            // Si hay cruce de horas, no se puede reservar la sala otra vez.
+            throw new BadRequestException("La sala ya está ocupada en ese horario.");
+        }
     }
 
     
