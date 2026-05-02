@@ -23,7 +23,6 @@ import com.agenda.itic.service.UsuariService;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 
