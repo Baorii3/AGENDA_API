@@ -96,6 +96,7 @@ public class SecurityConfig {
         return (web) -> web.ignoring()
             .requestMatchers("/activitats")
             .requestMatchers("/salas")
+            .requestMatchers("/usuaris/token")
             .requestMatchers("/swagger-ui/**", "/v3/api-docs/**");
     }
 }
