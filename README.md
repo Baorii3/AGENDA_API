@@ -156,7 +156,7 @@ Errores comunes (`400`) en usuarios:
 
 ## Seguridad
 
-En estado actual, tanto en `local` como en `prod`, los endpoints están permitidos (`permitAll`) según `SecurityConfig`, con soporte preparado para OAuth2/JWT.
+En estado actual, `prod` valida los JWT contra Cognito y `local` sigue con la configuración de desarrollo sin resource server activo.
 
 ## Estructura del proyecto
 

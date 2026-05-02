@@ -1,5 +1,6 @@
 package com.agenda.itic.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +23,12 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+    @Value("${aws.cognito.region}")
+    private String cognitoRegion;
+
+    @Value("${aws.cognito.userPoolId}")
+    private String cognitoUserPoolId;
+
     @Bean
     @ConditionalOnProperty(name = "spring.profiles.active", havingValue = "local", matchIfMissing = false)
     public SecurityFilterChain filterChainLocal(HttpSecurity http) throws Exception {
@@ -70,7 +77,7 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .anyRequest().permitAll())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(
-                    jwt -> jwt.jwkSetUri("https://www.googleapis.com/oauth2/v3/certs")
+                    jwt -> jwt.jwkSetUri("https://cognito-idp." + cognitoRegion + ".amazonaws.com/" + cognitoUserPoolId + "/.well-known/jwks.json")
                 ))
                 .oauth2Login(oauth -> oauth
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
