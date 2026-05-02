@@ -143,7 +143,6 @@ public class ActivitatService {
                 data,
                 horaFi,
                 horaInici)) {
-            // Si hay cruce de horas, no se puede reservar la sala otra vez.
             throw new BadRequestException("La sala ya está ocupada en ese horario.");
         }
     }
