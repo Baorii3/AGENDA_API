@@ -3,6 +3,7 @@ package com.agenda.itic.config;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -19,7 +20,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-// @EnableMethodSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
     @Bean
     @ConditionalOnProperty(name = "spring.profiles.active", havingValue = "local", matchIfMissing = false)
