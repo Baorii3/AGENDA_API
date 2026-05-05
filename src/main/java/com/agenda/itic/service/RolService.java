@@ -43,7 +43,7 @@ public class RolService {
             throw new BadRequestException("El nom del rol no pot estar buit");
         }
         String normalizedName = nombre.trim().toUpperCase();
-        Rol rol = rolRepository.findByNombreIgnoreCase(normalizedName).orElseThrow(() -> new ResourceNotFoundException("Rol no trobat: " + normalizedName))   ;
+        Rol rol = rolRepository.findByNombreIgnoreCase(normalizedName).orElse(null);
         if (rol == null) {
             rol = new Rol();
             rol.setNombre(normalizedName);

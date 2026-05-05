@@ -5,20 +5,23 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
-public class CorreoPermitido {
+@Table(name = "correo_permitido")
+public class WhitelistAdmin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
     @Column(unique = true)
     @NotBlank(message = "El correo no puede ser vacío")
     private String correo;
 
-    public CorreoPermitido() {}
+    public WhitelistAdmin() {}
 
-    public CorreoPermitido(String correo) {
+    public WhitelistAdmin(String correo) {
         this.correo = correo;
     }
 

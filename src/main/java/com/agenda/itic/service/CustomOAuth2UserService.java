@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Autowired
-    private CorreoPermitidoService correoPermitidoService;
+    private WhitelistAdminService whitelistAdminService;
 
 
     @Override
@@ -20,7 +20,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         String email = user.getAttribute("email");
 
-        if (email == null || correoPermitidoService.getCorreoPermitido(email) == null) {
+        if (email == null || whitelistAdminService.getWhitelistAdmin(email) == null) {
             throw new OAuth2AuthenticationException("Email no permitido");
         }
 

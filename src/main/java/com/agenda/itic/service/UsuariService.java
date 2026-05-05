@@ -4,7 +4,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -27,7 +26,7 @@ public class UsuariService {
     UsuariRepository usuariRepository;
 
     @Autowired
-    CorreoPermitidoService correoPermitidoService;
+    WhitelistAdminService whitelistAdminService;
 
     @Autowired
     RolService rolService;
@@ -84,7 +83,7 @@ public class UsuariService {
         }
 
         try {
-            if (correoPermitidoService.getCorreoPermitido(email) != null) {
+            if (whitelistAdminService.getWhitelistAdmin(email) != null) {
                 rolName = "ADMIN";
                 return getOrCreateRol(rolName);
             }
@@ -125,18 +124,20 @@ public class UsuariService {
             throw new BadRequestException("Token inválido: falta el claim email");
         }
 
-        Optional<Usuari> usuariOptional = usuariRepository.findByEmail(email);
-        if (usuariOptional.isPresent()) {
-            return toDTO(usuariOptional.get());
-        }
-
-        Usuari user = new Usuari();
+        Usuari user = usuariRepository.findByEmail(email).orElse(new Usuari());
+        boolean isNew = user.getId() == null;
+        
         user.setEmail(email);
         String name = jwt.getClaim("name");
         user.setNom(name == null ? "Desconocido" : name);
         String picture = jwt.getClaim("picture");
         user.setFotoPerfil(picture);
-        user.setRol(getRol(email));
+        
+        // Asignar rol solo si es nuevo o no tiene rol (permite overrides manuales en BBDD)
+        if (isNew || user.getRol() == null) {
+            user.setRol(getRol(email));
+        }
+        
         user.setActiu(true);
         user.setProvider("google");
         String providerId = jwt.getClaim("sub");

@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.http.HttpMethod;
@@ -38,14 +37,14 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/activitats/**").permitAll()
-                    .requestMatchers("/salas/**").permitAll()
-                        .requestMatchers("/correos-permitidos/**").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/usuaris/token").authenticated()
-                    .requestMatchers("/usuaris/**").permitAll()
-                    .requestMatchers("/dispositius/**").permitAll()
-                    .requestMatchers("/roles/**").permitAll()
-                    .requestMatchers("/recursos/**").permitAll()
-                    .requestMatchers("/permisos/**").permitAll()
+                        .requestMatchers("/salas/**").permitAll()
+                        .requestMatchers("/whitelist-admins/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/usuaris/token").authenticated()
+                        .requestMatchers("/usuaris/**").permitAll()
+                        .requestMatchers("/dispositius/**").permitAll()
+                        .requestMatchers("/roles/**").permitAll()
+                        .requestMatchers("/recursos/**").permitAll()
+                        .requestMatchers("/permisos/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/swagger-ui.html").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
@@ -63,22 +62,21 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/activitats/**").permitAll()
-                    .requestMatchers("/salas/**").permitAll()
-                        .requestMatchers("/correos-permitidos/**").permitAll()
-                    .requestMatchers("/usuaris/**").permitAll()
-                    .requestMatchers("/dispositius/**").permitAll()
-                    .requestMatchers("/roles/**").permitAll()
-                    .requestMatchers("/recursos/**").permitAll()
-                    .requestMatchers("/permisos/**").permitAll()
+                        .requestMatchers("/salas/**").permitAll()
+                        .requestMatchers("/whitelist-admins/**").permitAll()
+                        .requestMatchers("/usuaris/token").permitAll()
+                        .requestMatchers("/usuaris/**").permitAll()
+                        .requestMatchers("/dispositius/**").permitAll()
+                        .requestMatchers("/roles/**").permitAll()
+                        .requestMatchers("/recursos/**").permitAll()
+                        .requestMatchers("/permisos/**").permitAll()
                         .requestMatchers("/oauth2/**").permitAll()
                         .requestMatchers("/login/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/swagger-ui.html").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .anyRequest().permitAll())
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(
-                    jwt -> jwt.jwkSetUri("https://cognito-idp." + cognitoRegion + ".amazonaws.com/" + cognitoUserPoolId + "/.well-known/jwks.json")
-                ))
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(org.springframework.security.config.Customizer.withDefaults()))
                 .oauth2Login(oauth -> oauth
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                         .defaultSuccessUrl("/oauth/google/home", true)
@@ -97,14 +95,5 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
-
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring()
-            .requestMatchers("/activitats")
-            .requestMatchers("/salas")
-            .requestMatchers("/usuaris/token")
-            .requestMatchers("/swagger-ui/**", "/v3/api-docs/**");
     }
 }

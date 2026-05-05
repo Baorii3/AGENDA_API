@@ -7,13 +7,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.agenda.itic.model.Permis;
-import com.agenda.itic.model.CorreoPermitido;
+import com.agenda.itic.model.WhitelistAdmin;
 import com.agenda.itic.model.Recurs;
 import com.agenda.itic.model.RecursNom;
 import com.agenda.itic.model.Rol;
 import com.agenda.itic.model.Sala;
 import com.agenda.itic.model.Usuari;
-import com.agenda.itic.repository.CorreoPermitidoRepository;
+import com.agenda.itic.repository.WhitelistAdminRepository;
 import com.agenda.itic.repository.PermisRepository;
 import com.agenda.itic.repository.RecursRepository;
 import com.agenda.itic.repository.RolRepository;
@@ -28,7 +28,7 @@ public class DataInitializer implements CommandLineRunner {
     private final PermisRepository permisRepository;
     private final SalaRepository salaRepository;
     private final UsuariRepository usuariRepository;
-    private final CorreoPermitidoRepository correoPermitidoRepository;
+    private final WhitelistAdminRepository whitelistAdminRepository;
 
     public DataInitializer(
             RolRepository rolRepository,
@@ -36,13 +36,13 @@ public class DataInitializer implements CommandLineRunner {
             PermisRepository permisRepository,
             SalaRepository salaRepository,
             UsuariRepository usuariRepository,
-            CorreoPermitidoRepository correoPermitidoRepository) {
+            WhitelistAdminRepository whitelistAdminRepository) {
         this.rolRepository = rolRepository;
         this.recursRepository = recursRepository;
         this.permisRepository = permisRepository;
         this.salaRepository = salaRepository;
         this.usuariRepository = usuariRepository;
-        this.correoPermitidoRepository = correoPermitidoRepository;
+        this.whitelistAdminRepository = whitelistAdminRepository;
     }
 
     @Override
@@ -75,8 +75,8 @@ public class DataInitializer implements CommandLineRunner {
         ensureUsuari("Professor Demo", "professor@iticbcn.cat", professor, "local", "prof-demo", "https://placehold.co/128x128");
         ensureUsuari("Usuari Demo", "usuari_1@iticbcn.cat", usuari, "local", "user-demo", "https://placehold.co/128x128");
 
-        ensureCorreoPermitido("2223_ian.ordonez@iticbcn.cat");
-        ensureCorreoPermitido("2024_juli.farres@iticbcn.cat");
+        ensureWhitelistAdmin("2223_ian.ordonez@iticbcn.cat");
+        ensureWhitelistAdmin("2024_juli.farres@iticbcn.cat");
     }
 
     private Rol ensureRol(String nombre) {
@@ -141,11 +141,11 @@ public class DataInitializer implements CommandLineRunner {
                 });
     }
 
-    private CorreoPermitido ensureCorreoPermitido(String correo) {
-        CorreoPermitido existing = correoPermitidoRepository.findByCorreoIgnoreCase(correo);
+    private WhitelistAdmin ensureWhitelistAdmin(String correo) {
+        WhitelistAdmin existing = whitelistAdminRepository.findByCorreoIgnoreCase(correo);
         if (existing != null) {
             return existing;
         }
-        return correoPermitidoRepository.save(new CorreoPermitido(correo));
+        return whitelistAdminRepository.save(new WhitelistAdmin(correo));
     }
 }

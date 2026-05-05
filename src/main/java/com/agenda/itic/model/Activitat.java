@@ -10,7 +10,8 @@ public class Activitat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_activitat;
+    @Column(name = "id_activitat")
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_sala", nullable = false)
@@ -43,9 +44,9 @@ public class Activitat {
     public Activitat() {
     }
 
-    public Activitat(Long id_activitat, Sala sala, String titol, String descripcio,
+    public Activitat(Long id, Sala sala, String titol, String descripcio,
             Usuari user, LocalDate data, LocalTime horaInici, LocalTime horaFi) {
-        this.id_activitat = id_activitat;
+        this.id = id;
         this.sala = sala;
         this.titol = titol;
         this.descripcio = descripcio;
@@ -55,12 +56,11 @@ public class Activitat {
         this.horaFi = horaFi;
     }
 
-    public Long getId_activitat() {
-        return id_activitat;
+    public Long getId() {
+        return id;
     }
-
-    public void setId_activitat(Long id_activitat) {
-        this.id_activitat = id_activitat;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Sala getSala() {

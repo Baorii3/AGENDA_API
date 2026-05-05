@@ -37,11 +37,21 @@ public class GlobalExceptionHandler {
                 ? e.getMostSpecificCause().getMessage()
                 : e.getMessage();
 
-        if (exceptionMessage != null && exceptionMessage.toLowerCase().contains("email")) {
-            message = "Ya existe un usuario con ese correo";
-        } else if (exceptionMessage != null && (exceptionMessage.toLowerCase().contains("sala")
-                || exceptionMessage.toLowerCase().contains("salas"))) {
-            message = "Ya existe una sala con ese nombre";
+        if (exceptionMessage != null) {
+            String lowerMessage = exceptionMessage.toLowerCase();
+            if (lowerMessage.contains("fk") || lowerMessage.contains("foreign key") || lowerMessage.contains("violates foreign key")) {
+                if (lowerMessage.contains("id_sala")) {
+                    message = "La sala especificada no existe";
+                } else if (lowerMessage.contains("id_usuari")) {
+                    message = "El usuario especificado no existe";
+                } else {
+                    message = "Referencia a un registro inexistente";
+                }
+            } else if (lowerMessage.contains("email")) {
+                message = "Ya existe un usuario con ese correo";
+            } else if (lowerMessage.contains("sala") || lowerMessage.contains("salas")) {
+                message = "Ya existe una sala con ese nombre o identificador";
+            }
         }
         ErrorResponse errorResponse = new ErrorResponse(400, message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);

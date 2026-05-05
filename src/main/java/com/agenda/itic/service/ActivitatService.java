@@ -43,7 +43,7 @@ public class ActivitatService {
 
     private ActivitatResponseDTO toDTO(Activitat a) {
         return new ActivitatResponseDTO(
-                a.getId_activitat(),
+                a.getId(),
                 a.getSala().getId(),
                 a.getSala().getNom(),
                 a.getUser().getId(),

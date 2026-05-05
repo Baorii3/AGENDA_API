@@ -70,7 +70,7 @@ public class ActivitatController {
     @DeleteMapping
     @PreAuthorize(SecurityExpressions.ACTIVITAT_DELETE)
     public ResponseEntity<Void> deleteAllActivitats() {
-        activitatService.getActivitatModel().forEach(a -> activitatService.deleteActivitat(a.getId_activitat()));
+        activitatService.getActivitatModel().forEach(a -> activitatService.deleteActivitat(a.getId()));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

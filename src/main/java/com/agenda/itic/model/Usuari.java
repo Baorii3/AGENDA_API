@@ -9,7 +9,8 @@ public class Usuari {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_usuari;
+    @Column(name = "id_usuari")
+    private Long id;
 
     @Column(nullable = false)
     private String nom;
@@ -46,9 +47,9 @@ public class Usuari {
     public Usuari() {
     }
 
-    public Usuari(Long id_usuari, String nom, String email, Rol rol, boolean actiu, String provider,
+    public Usuari(Long id, String nom, String email, Rol rol, boolean actiu, String provider,
             String providerId) {
-        this.id_usuari = id_usuari;
+        this.id = id;
         this.nom = nom;
         this.email = email;
         this.rol = rol;
@@ -58,11 +59,11 @@ public class Usuari {
     }
 
     public Long getId() {
-        return id_usuari;
+        return id;
     }
 
     public void setId(Long id) {
-        this.id_usuari = id;
+        this.id = id;
     }
 
     public String getNom() {

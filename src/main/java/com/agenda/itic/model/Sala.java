@@ -11,7 +11,8 @@ public class Sala {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_sala;
+    @Column(name = "id_sala")
+    private Long id;
 
     @Column(nullable = false, unique = true)
     private String nom;
@@ -72,8 +73,8 @@ public class Sala {
     public Sala() {
     }
 
-    public Sala(Long id_sala, String nom, PisoSala ubicacio, String descripcio, Color color) {
-        this.id_sala = id_sala;
+    public Sala(Long id, String nom, PisoSala ubicacio, String descripcio, Color color) {
+        this.id = id;
         this.nom = nom;
         this.ubicacio = ubicacio;
         this.descripcio = descripcio;
@@ -82,11 +83,11 @@ public class Sala {
     }
 
     public Long getId() {
-        return id_sala;
+        return id;
     }
 
-    public void setId(Long id_sala) {
-        this.id_sala = id_sala;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNom() {
