@@ -38,7 +38,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/activitats/**").permitAll()
                         .requestMatchers("/salas/**").permitAll()
-                        .requestMatchers("/whitelist-admins/**").permitAll()
+                        .requestMatchers("/admin-permitidos/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuaris/token").authenticated()
                         .requestMatchers("/usuaris/**").permitAll()
                         .requestMatchers("/dispositius/**").permitAll()
@@ -63,7 +63,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/activitats/**").permitAll()
                         .requestMatchers("/salas/**").permitAll()
-                        .requestMatchers("/whitelist-admins/**").permitAll()
+                        .requestMatchers("/admin-permitidos/**").permitAll()
                         .requestMatchers("/usuaris/token").permitAll()
                         .requestMatchers("/usuaris/**").permitAll()
                         .requestMatchers("/dispositius/**").permitAll()

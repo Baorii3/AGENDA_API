@@ -26,7 +26,7 @@ public class UsuariService {
     UsuariRepository usuariRepository;
 
     @Autowired
-    WhitelistAdminService whitelistAdminService;
+    AdminPermitidoService adminPermitidoService;
 
     @Autowired
     RolService rolService;
@@ -83,7 +83,7 @@ public class UsuariService {
         }
 
         try {
-            if (whitelistAdminService.getWhitelistAdmin(email) != null) {
+            if (adminPermitidoService.getAdminPermitido(email) != null) {
                 rolName = "ADMIN";
                 return getOrCreateRol(rolName);
             }

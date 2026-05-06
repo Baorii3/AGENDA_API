@@ -7,13 +7,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.agenda.itic.model.Permis;
-import com.agenda.itic.model.WhitelistAdmin;
+import com.agenda.itic.model.AdminPermitido;
 import com.agenda.itic.model.Recurs;
 import com.agenda.itic.model.RecursNom;
 import com.agenda.itic.model.Rol;
 import com.agenda.itic.model.Sala;
 import com.agenda.itic.model.Usuari;
-import com.agenda.itic.repository.WhitelistAdminRepository;
+import com.agenda.itic.repository.AdminPermitidoRepository;
 import com.agenda.itic.repository.PermisRepository;
 import com.agenda.itic.repository.RecursRepository;
 import com.agenda.itic.repository.RolRepository;
@@ -28,7 +28,7 @@ public class DataInitializer implements CommandLineRunner {
     private final PermisRepository permisRepository;
     private final SalaRepository salaRepository;
     private final UsuariRepository usuariRepository;
-    private final WhitelistAdminRepository whitelistAdminRepository;
+    private final AdminPermitidoRepository adminPermitidoRepository;
 
     public DataInitializer(
             RolRepository rolRepository,
@@ -36,13 +36,13 @@ public class DataInitializer implements CommandLineRunner {
             PermisRepository permisRepository,
             SalaRepository salaRepository,
             UsuariRepository usuariRepository,
-            WhitelistAdminRepository whitelistAdminRepository) {
+            AdminPermitidoRepository adminPermitidoRepository) {
         this.rolRepository = rolRepository;
         this.recursRepository = recursRepository;
         this.permisRepository = permisRepository;
         this.salaRepository = salaRepository;
         this.usuariRepository = usuariRepository;
-        this.whitelistAdminRepository = whitelistAdminRepository;
+        this.adminPermitidoRepository = adminPermitidoRepository;
     }
 
     @Override
@@ -56,27 +56,29 @@ public class DataInitializer implements CommandLineRunner {
         Recurs activitats = ensureRecurs(RecursNom.ACTIVITAT);
         Recurs usuaris = ensureRecurs(RecursNom.USUARI);
 
-        ensurePermis(admin, salas, 15);
-        ensurePermis(admin, activitats, 15);
-        ensurePermis(admin, usuaris, 15);
+        crearPermis(admin, salas, 15);
+        crearPermis(admin, activitats, 15);
+        crearPermis(admin, usuaris, 15);
 
-        ensurePermis(professor, salas, 7);
-        ensurePermis(professor, activitats, 7);
-        ensurePermis(professor, usuaris, 1);
+        crearPermis(professor, salas, 7);
+        crearPermis(professor, activitats, 7);
+        crearPermis(professor, usuaris, 1);
 
-        ensurePermis(usuari, salas, 1);
-        ensurePermis(usuari, activitats, 1);
+        crearPermis(usuari, salas, 1);
+        crearPermis(usuari, activitats, 1);
 
-        ensureSala("Aula 101", Sala.Color.AZUL, "Planta baixa");
-        ensureSala("Aula 202", Sala.Color.VERDE, "Planta 4");
-        ensureSala("Sala de Juntes", Sala.Color.MORADO, "Sala principal");
+        crearSala("Aula 101", Sala.Color.AZUL, "Planta baixa");
+        crearSala("Aula 202", Sala.Color.VERDE, "Planta 4");
+        crearSala("Sala de Juntes", Sala.Color.MORADO, "Sala principal");
 
-        ensureUsuari("Admin Demo", "admin@iticbcn.cat", admin, "local", "admin-demo", "https://placehold.co/128x128");
-        ensureUsuari("Professor Demo", "professor@iticbcn.cat", professor, "local", "prof-demo", "https://placehold.co/128x128");
-        ensureUsuari("Usuari Demo", "usuari_1@iticbcn.cat", usuari, "local", "user-demo", "https://placehold.co/128x128");
+        crearUsuari("Admin Demo", "admin@iticbcn.cat", admin, "local", "admin-demo", "https://placehold.co/128x128");
+        crearUsuari("Professor Demo", "professor@iticbcn.cat", professor, "local", "prof-demo",
+                "https://placehold.co/128x128");
+        crearUsuari("Usuari Demo", "usuari_1@iticbcn.cat", usuari, "local", "user-demo",
+                "https://placehold.co/128x128");
 
-        ensureWhitelistAdmin("2223_ian.ordonez@iticbcn.cat");
-        ensureWhitelistAdmin("2024_juli.farres@iticbcn.cat");
+        ensureAdminPermitido("2223_ian.ordonez@iticbcn.cat");
+        ensureAdminPermitido("2024_juli.farres@iticbcn.cat");
     }
 
     private Rol ensureRol(String nombre) {
@@ -91,7 +93,7 @@ public class DataInitializer implements CommandLineRunner {
                 .orElseGet(() -> recursRepository.save(new Recurs(nombre)));
     }
 
-    private Permis ensurePermis(Rol rol, Recurs recurs, int valueAccio) {
+    private Permis crearPermis(Rol rol, Recurs recurs, int valueAccio) {
         return permisRepository.findByRolIdAndRecursoId(rol.getId(), recurs.getId())
                 .map(existing -> {
                     if (existing.getValueAccio() != valueAccio) {
@@ -109,7 +111,7 @@ public class DataInitializer implements CommandLineRunner {
                 });
     }
 
-    private Sala ensureSala(String nombre, Sala.Color color, String descripcio) {
+    private Sala crearSala(String nombre, Sala.Color color, String descripcio) {
         return salaRepository.findAll().stream()
                 .filter(sala -> nombre.equalsIgnoreCase(sala.getNom()))
                 .findFirst()
@@ -126,7 +128,8 @@ public class DataInitializer implements CommandLineRunner {
                 });
     }
 
-    private Usuari ensureUsuari(String nom, String email, Rol rol, String provider, String providerId, String fotoPerfil) {
+    private Usuari crearUsuari(String nom, String email, Rol rol, String provider, String providerId,
+            String fotoPerfil) {
         return usuariRepository.findByEmail(email)
                 .orElseGet(() -> {
                     Usuari usuari = new Usuari();
@@ -141,11 +144,11 @@ public class DataInitializer implements CommandLineRunner {
                 });
     }
 
-    private WhitelistAdmin ensureWhitelistAdmin(String correo) {
-        WhitelistAdmin existing = whitelistAdminRepository.findByCorreoIgnoreCase(correo);
+    private AdminPermitido ensureAdminPermitido(String correo) {
+        AdminPermitido existing = adminPermitidoRepository.findByCorreoIgnoreCase(correo);
         if (existing != null) {
             return existing;
         }
-        return whitelistAdminRepository.save(new WhitelistAdmin(correo));
+        return adminPermitidoRepository.save(new AdminPermitido(correo));
     }
 }

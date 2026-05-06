@@ -1,6 +1,6 @@
 package com.agenda.itic.dto;
 
-public record WhitelistAdminResponseDto(
+public record AdminPermitidoResponseDto(
     Long id,
     String correo
 ) {}

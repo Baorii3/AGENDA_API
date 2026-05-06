@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.agenda.itic.service.WhitelistAdminService;
+import com.agenda.itic.service.AdminPermitidoService;
 import com.agenda.itic.service.UsuariService;
 
 
@@ -21,7 +21,7 @@ public class OAuthController {
     UsuariService usuariService;
 
     @Autowired
-    WhitelistAdminService whitelistAdminService;
+    AdminPermitidoService adminPermitidoService;
     
     @Value("${app.frontend.url}")
     private String frontendUrl;

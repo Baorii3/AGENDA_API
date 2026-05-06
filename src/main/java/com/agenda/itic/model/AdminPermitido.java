@@ -10,7 +10,7 @@ import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "correo_permitido")
-public class WhitelistAdmin {
+public class AdminPermitido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,9 +19,9 @@ public class WhitelistAdmin {
     @NotBlank(message = "El correo no puede ser vacío")
     private String correo;
 
-    public WhitelistAdmin() {}
+    public AdminPermitido() {}
 
-    public WhitelistAdmin(String correo) {
+    public AdminPermitido(String correo) {
         this.correo = correo;
     }
 
