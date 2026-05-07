@@ -23,7 +23,6 @@ import com.agenda.itic.repository.SalaRepository;
 @Service
 public class ActivitatService {
 
-
     @Autowired
     UsuariRepository usuariRepository;
 
@@ -32,7 +31,6 @@ public class ActivitatService {
 
     @Autowired
     SalaRepository salaRepository;
-
 
     public List<ActivitatResponseDTO> getAllActivitats() {
         return activitatRepository.findAll()
@@ -81,8 +79,26 @@ public class ActivitatService {
     }
 
     public ActivitatResponseDTO createActivitat(ActivitatRequestDTO activitatRequestDTO) {
-        validateActivitatRequest(activitatRequestDTO);
+        validateActivitatRequest(activitatRequestDTO, null);
         Activitat activitat = toModel(activitatRequestDTO);
+        activitat = activitatRepository.save(activitat);
+        return toDTO(activitat);
+    }
+
+    public ActivitatResponseDTO updateActivitat(Long id, ActivitatRequestDTO request) {
+        Activitat activitat = activitatRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Activitat no trobada"));
+
+        validateActivitatRequest(request, id);
+
+        activitat.setSala(getSalaOrThrow(request.getId_sala()));
+        activitat.setUser(getUsuariOrThrow(request.getId_usuari()));
+        activitat.setTitol(request.getTitol());
+        activitat.setDescripcio(request.getDescripcio());
+        activitat.setData(request.getData());
+        activitat.setHoraInici(request.getHoraInici());
+        activitat.setHoraFi(request.getHoraFi());
+
         activitat = activitatRepository.save(activitat);
         return toDTO(activitat);
     }
@@ -90,7 +106,6 @@ public class ActivitatService {
     public void deleteActivitat(Long id) {
         Activitat activitat = activitatRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Activitat no trobada"));
-
 
         activitatRepository.delete(activitat);
     }
@@ -107,7 +122,7 @@ public class ActivitatService {
                         "No se puede crear la actividad: La sala con ID " + idSala + " no existe."));
     }
 
-    private void validateActivitatRequest(ActivitatRequestDTO activitatRequestDTO) {
+    private void validateActivitatRequest(ActivitatRequestDTO activitatRequestDTO, Long idPropio) {
         if (activitatRequestDTO.getId_sala() == null || activitatRequestDTO.getId_usuari() == null) {
             throw new BadRequestException("Los IDs de la sala y el usuario son obligatorios.");
         }
@@ -138,16 +153,31 @@ public class ActivitatService {
         }
 
         // Comprueba si la sala ya tiene otra actividad que se solape en este horario.
-        if (activitatRepository.existsBySalaIdAndDataAndHoraIniciLessThanAndHoraFiGreaterThanAndActivaTrue(
-                activitatRequestDTO.getId_sala(),
-                data,
-                horaFi,
-                horaInici)) {
+        // Si el idPropio es null es como si se estuviera creadno, en cambio si no es
+        // null lo omitimos, si no fuese asi siempre daria error porq se solaparia con
+        // su misma actividad
+        boolean existeConflicto;
+        if (idPropio == null) {
+            existeConflicto = activitatRepository
+                    .existsBySalaIdAndDataAndHoraIniciLessThanAndHoraFiGreaterThanAndActivaTrue(
+                            activitatRequestDTO.getId_sala(),
+                            data,
+                            horaFi,
+                            horaInici);
+        } else {
+            existeConflicto = activitatRepository
+                    .existsBySalaIdAndDataAndHoraIniciLessThanAndHoraFiGreaterThanAndActivaTrueAndIdNot(
+                            activitatRequestDTO.getId_sala(),
+                            data,
+                            horaFi,
+                            horaInici,
+                            idPropio);
+        }
+
+        if (existeConflicto) {
             throw new BadRequestException("La sala ya está ocupada en ese horario.");
         }
     }
-
-    
 
     public List<Activitat> getActivitatModel() {
         return activitatRepository.findAll();

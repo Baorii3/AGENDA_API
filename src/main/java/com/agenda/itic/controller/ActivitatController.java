@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
@@ -55,9 +56,16 @@ public class ActivitatController {
 
     @PostMapping
     @PreAuthorize(SecurityExpressions.ACTIVITAT_CREATE)
-    public ResponseEntity<ActivitatResponseDTO> createActivitat(@Valid @RequestBody ActivitatRequestDTO activitatRequestDTO) {
-        ActivitatResponseDTO response = activitatService.createActivitat(activitatRequestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public ResponseEntity<ActivitatResponseDTO> createActivitat(
+            @Valid @RequestBody ActivitatRequestDTO peticioActivitatDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(activitatService.createActivitat(peticioActivitatDTO));
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize(SecurityExpressions.ACTIVITAT_UPDATE)
+    public ResponseEntity<ActivitatResponseDTO> updateActivitat(@PathVariable Long id,
+            @Valid @RequestBody ActivitatRequestDTO peticioActivitatDTO) {
+        return ResponseEntity.status(HttpStatus.OK).body(activitatService.updateActivitat(id, peticioActivitatDTO));
     }
 
     @DeleteMapping("/{id}")

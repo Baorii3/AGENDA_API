@@ -10,6 +10,8 @@ public final class SecurityExpressions {
     public static final String ACTIVITAT_READ = "@securityService.hasPermission(T(com.agenda.itic.model.RecursNom).ACTIVITAT, T(com.agenda.itic.model.Accio).READ)";
     public static final String ACTIVITAT_CREATE = "@securityService.hasPermission(T(com.agenda.itic.model.RecursNom).ACTIVITAT, T(com.agenda.itic.model.Accio).CREATE)";
     public static final String ACTIVITAT_DELETE = "@securityService.hasPermission(T(com.agenda.itic.model.RecursNom).ACTIVITAT, T(com.agenda.itic.model.Accio).DELETE)";
+    public static final String ACTIVITAT_UPDATE = "@securityService.hasPermission(T(com.agenda.itic.model.RecursNom).ACTIVITAT, T(com.agenda.itic.model.Accio).UPDATE)";
+
 
     public static final String SALA_READ = "@securityService.hasPermission(T(com.agenda.itic.model.RecursNom).SALA, T(com.agenda.itic.model.Accio).READ)";
     public static final String SALA_CREATE = "@securityService.hasPermission(T(com.agenda.itic.model.RecursNom).SALA, T(com.agenda.itic.model.Accio).CREATE)";

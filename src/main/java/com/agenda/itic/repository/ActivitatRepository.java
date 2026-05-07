@@ -17,4 +17,12 @@ public interface ActivitatRepository extends JpaRepository<Activitat, Long> {
             LocalDate data,
             LocalTime horaFi,
             LocalTime horaInici);
+
+    boolean existsBySalaIdAndDataAndHoraIniciLessThanAndHoraFiGreaterThanAndActivaTrueAndIdNot(
+            Long idSala,
+            LocalDate data,
+            LocalTime horaFi,
+            LocalTime horaInici,
+            Long id);
+
 }
