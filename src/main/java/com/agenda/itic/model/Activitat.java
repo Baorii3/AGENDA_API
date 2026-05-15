@@ -1,0 +1,145 @@
+package com.agenda.itic.model;
+
+import jakarta.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
+@Entity
+public class Activitat {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_activitat")
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_sala", nullable = false)
+    private Sala sala;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_usuari", nullable = false)
+    private Usuari user;
+
+    private String titol;
+    private String descripcio;
+    private LocalDate data;
+    private LocalTime horaInici;
+    private LocalTime horaFi;
+    private boolean activa = true;
+    private LocalDateTime dataCreacio;
+    private LocalDateTime dataModificacio;
+
+    @PrePersist
+    protected void onCreate() {
+        dataCreacio = LocalDateTime.now();
+        dataModificacio = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        dataModificacio = LocalDateTime.now();
+    }
+
+    public Activitat() {
+    }
+
+    public Activitat(Long id, Sala sala, String titol, String descripcio,
+            Usuari user, LocalDate data, LocalTime horaInici, LocalTime horaFi) {
+        this.id = id;
+        this.sala = sala;
+        this.titol = titol;
+        this.descripcio = descripcio;
+        this.user = user;
+        this.data = data;
+        this.horaInici = horaInici;
+        this.horaFi = horaFi;
+    }
+
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Sala getSala() {
+        return sala;
+    }
+
+    public void setSala(Sala sala) {
+        this.sala = sala;
+    }
+
+    public String getTitol() {
+        return titol;
+    }
+
+    public void setTitol(String titol) {
+        this.titol = titol;
+    }
+
+    public String getDescripcio() {
+        return descripcio;
+    }
+
+    public void setDescripcio(String descripcio) {
+        this.descripcio = descripcio;
+    }
+
+    public LocalDate getData() {
+        return data;
+    }
+
+    public void setData(LocalDate data) {
+        this.data = data;
+    }
+
+    public LocalTime getHoraInici() {
+        return horaInici;
+    }
+
+    public void setHoraInici(LocalTime horaInici) {
+        this.horaInici = horaInici;
+    }
+
+    public LocalTime getHoraFi() {
+        return horaFi;
+    }
+
+    public void setHoraFi(LocalTime horaFi) {
+        this.horaFi = horaFi;
+    }
+
+    public boolean isActiva() {
+        return activa;
+    }
+
+    public void setActiva(boolean activa) {
+        this.activa = activa;
+    }
+
+    public LocalDateTime getDataCreacio() {
+        return dataCreacio;
+    }
+
+    public void setDataCreacio(LocalDateTime dataCreacio) {
+        this.dataCreacio = dataCreacio;
+    }
+
+    public LocalDateTime getDataModificacio() {
+        return dataModificacio;
+    }
+
+    public void setDataModificacio(LocalDateTime dataModificacio) {
+        this.dataModificacio = dataModificacio;
+    }
+
+    public Usuari getUser() {
+        return user;
+    }
+
+    public void setUser(Usuari user) {
+        this.user = user;
+    }
+}
