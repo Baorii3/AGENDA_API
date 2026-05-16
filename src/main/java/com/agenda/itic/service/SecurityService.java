@@ -21,6 +21,9 @@ public class SecurityService {
 
     private final UsuariRepository usuariRepository;
 
+    @Value("${app.master.key}")
+    private String masterKey;
+
     public SecurityService(UsuariRepository usuariRepository) {
         this.usuariRepository = usuariRepository;
     }
@@ -28,6 +31,15 @@ public class SecurityService {
     public boolean hasPermission(RecursNom recurs, Accio accio) {
         if (recurs == null || accio == null) {
             return false;
+        }
+
+        ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attrs != null) {
+            HttpServletRequest request = attrs.getRequest();
+            String apiKey = request.getHeader("X-API-KEY");
+            if (apiKey != null && apiKey.equals(masterKey)) {
+                return true;
+            }
         }
 
         Optional<Usuari> currentUsuari = getCurrentUsuari();
@@ -64,6 +76,14 @@ public class SecurityService {
     }
 
     public boolean isAdmin() {
+        ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attrs != null) {
+            HttpServletRequest request = attrs.getRequest();
+            String apiKey = request.getHeader("X-API-KEY");
+            if (apiKey != null && apiKey.equals(masterKey)) {
+                return true;
+            }
+        }
         return getCurrentUsuari().map(this::isAdmin).orElse(false);
     }
 
