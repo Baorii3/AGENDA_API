@@ -37,11 +37,11 @@ public class DispositiuController {
     }
 
     @PostMapping
-    public ResponseEntity<List<Dispositiu>> postMethodName(@RequestBody DispositiuRequestDTO dispositiu) {
+    public ResponseEntity<Dispositiu> postMethodName(@RequestBody DispositiuRequestDTO dispositiu) {
         Dispositiu entity = dispositiuService.createDispositiu(dispositiu);
-        return ResponseEntity.status(HttpStatus.CREATED).body(List.of(entity));
+        return ResponseEntity.status(HttpStatus.CREATED).body(entity);
     }
-    
+
     @PutMapping("/{mac}/heartbeat")
     public ResponseEntity<Dispositiu> updateHeartbeat(@PathVariable String mac) {
         Dispositiu updatedEntity = dispositiuService.setDispositiuHeartbeat(mac);
